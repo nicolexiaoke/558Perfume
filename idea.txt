@@ -1,0 +1,39 @@
+KG: 
+1. Finance:
+Stock(issue_date, issue_price, name, sector, ...) 
+<-> Company_info(name, size, found_date, website, CEO, ...)  
+<-> Revenue_Data(Revenue, new income, Net profit margin, ...)
+
+交易所数据 + 企业年报数据 + Company_info
+
+2. Nation Park
+CA National Park (name, Establish date, type, ... )
+<-> Animals & Tree (name, type, food chains, ...)
+<-> Geomotry Data ( invoved, changes, chemicals, physics feature...)
+
+National Park  官网，生物学信息 ，地质学信息
+
+
+Commodity - 某一品类的商品，推荐(类似商品、购买平台)， 价格比较（择优）
+不同平台的商品， 各个方面 (价格、质量...)  
+
+Amazon, ebay, 官网  -> comment, ratings, everything
+
+口红：  
+香水：name， 味道， size，  品牌， 所在平台，  ratings, ... 
+
+3. Professors
+US Professor (Department, Courses ...)
+<-> Teach info (Ratings, comments, ...) -> rate my professor
+<-> Research info (research fields, out comes, ...) -> 
+
+US Univeristy Websites, Personal Website,  rate my professor (???)
+
+
+// 不好找
+4.  Countries
+Countries -> (Name, President, 
+<-> President (onboard time, born, lifetime)
+<-> History(dynasty, ...)
+
+Wiki, History Website, (???)
