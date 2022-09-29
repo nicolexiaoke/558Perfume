@@ -17,4 +17,3 @@ The first possible technical challenge we will meet is the powerful anti-crawler
 Then the entity linking challenge. Some products may have very different titles and they are not likely to linked with each other through title although they are the same entities, while others may have similiar titles but not likely to be same entities.
 
 Deduplicate and data lacking. Some entities may lack of data while others may appear duplicate on several platforms.
-
