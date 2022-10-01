@@ -14,7 +14,11 @@ Project's tree-structured directories present as follows:
 
 ```text
 .
+├── 558 propopal.pdf
+├── Perfume Comparison and Recommendation System.pdf
 ├── README.md
+├── data
+│   └── final_perfume_data.csv
 ├── idea.txt
 └── proposal.md
 ```
