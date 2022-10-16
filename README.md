@@ -17,7 +17,7 @@
 
 ### 2. importing data into database
 
-* run example.py by command line under current ./neo4j/ with:
+* run example.py by command line under ./neo4j/ with:
     ```
     python example.py
     ```
