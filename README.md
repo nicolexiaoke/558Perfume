@@ -2,6 +2,25 @@
 
 ## Development Instructions
 
+### 0. setting a virtual environment
+
+* install virtualenv using
+    ```
+    pip install virtualenv 
+    ```
+* under the same directory, activate virtualenv by
+    ```
+    myenv\Scripts\activate
+    ```
+
+* Similarly like Linux you can deactivate it like
+    ```
+    deactivate
+    ```
+
+* open Neo4j Desktop, click on "Graph Apps" in the left column, then open "Neo4j Browser";
+
+
 ### 1. connecting to neo4j database
 
 * download  Neo4j Desktop at https://neo4j.com/download-center/#cyphershell;
