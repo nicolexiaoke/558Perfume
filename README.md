@@ -4,18 +4,19 @@
 
 ### 0. setting a virtual environment
 
-* install virtualenv using
+* check existing virtualenv using
     ```
-    pip install virtualenv 
-    ```
-* under the same directory, activate virtualenv by
-    ```
-    myenv\Scripts\activate
+    conda env list 
     ```
 
-* Similarly like Linux you can deactivate it like
+* activate virtualenv by
     ```
-    deactivate
+    conda activate env_name
+    ```
+
+* deactivate it 
+    ```
+    conda deactivate
     ```
 
 * open Neo4j Desktop, click on "Graph Apps" in the left column, then open "Neo4j Browser";
