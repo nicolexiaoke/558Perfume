@@ -2,7 +2,7 @@
 
 ## Development Instructions
 
-### 0. setting a virtual environment
+### 0. setting a virtual environment, preparing to connect
 
 * check existing virtualenv using
     ```
@@ -18,8 +18,6 @@
     ```
     conda deactivate
     ```
-
-* open Neo4j Desktop, click on "Graph Apps" in the left column, then open "Neo4j Browser";
 
 
 ### 1. connecting to neo4j database
