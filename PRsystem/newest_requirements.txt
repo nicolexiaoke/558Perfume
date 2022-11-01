@@ -1,0 +1,8 @@
+Django
+gunicorn
+django-neomodel
+djangorestframework
+neo4j-driver
+neomodel
+pytz
+whitenoise
