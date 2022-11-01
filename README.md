@@ -24,7 +24,7 @@
 
 ### 3. front-end framework -- Django
 
-* in ./PRsystem/
+* paradise-papers-django is an example django-neo4j framework
 
 
 
