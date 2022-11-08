@@ -1,0 +1,76 @@
+        CREATE (n1:Perfume { name: 'Escape', size: '1.7 oz', smell: '', price: 31.99, rating: 4.5, comments:'I love Calvin Klein escape. Problem is I ordered it February 22 and its still not here. I had a second order and it already came. Love the prices, discounts, and convenience.' }) 
+            CREATE (n2:Perfume { name: 'Escape', size: '1.7 oz', smell: '', price: 30, rating: 4.8, comments:'One of my all time favorites! Great in ant season…'}) 
+            CREATE (n3:Perfume { name: 'Coach Platinum', size: '2 oz', smell: 'sexy', price: 54.99, rating: 4.9, comments:'A++ This… is a very nice fragrance. It s calm, soft, soothing, ugh it s just beautiful. If you want something crowd pleasing & that s not overwhelming give this a try. Can be worn year round night/ day & doesn t offend anyone. It s such a sexy & classy scent. I smelled this on paper & immediately knew I was GOING to buy the 100ML. The smell is like a soft kinda sweet powder, you definitely get that tonka bean & sandalwood with a hint of leather in the background to keep a manly tone. Next to PDM Layton, this is my second favorite Cologne. It s just sooo nice!! Highly recommended'}) 
+
+            CREATE (n4:DeliveryOption {description:'FedEx'}) 
+            CREATE (n5:DeliveryOption {description:'UPS'}) 
+            
+            CREATE (n6:SellingPlatform {name:'fragrancenet'}) 
+            CREATE (n7:SellingPlatform {name:'amazon'}) 
+            
+            CREATE (n8:Brand {name:'calvin klein'}) 
+            CREATE (n9:Brand {name:'coach'}) 
+
+            CREATE (n1)-[:sameAs]->(n2) 
+            CREATE (n2)-[:sameAs]->(n1) 
+            CREATE (n1)-[:haveSimilarPrices]->(n2) 
+            CREATE (n2)-[:haveSimilarPrices]->(n1) 
+            CREATE (n1)-[:haveSimilarScents]->(n2) 
+            CREATE (n2)-[:haveSimilarScents]->(n1) 
+
+            CREATE (n1)-[:deliverBy]->(n4) 
+            CREATE (n1)-[:deliverBy]->(n5) 
+            CREATE (n2)-[:deliverBy]->(n4) 
+            CREATE (n2)-[:deliverBy]->(n5) 
+            CREATE (n3)-[:deliverBy]->(n4) 
+            
+            CREATE (n1)-[:listedOn]->(n6) 
+            CREATE (n2)-[:listedOn]->(n7) 
+            CREATE (n3)-[:listedOn]->(n6) 
+            
+            CREATE (n1)-[:productOf]->(n8) 
+            CREATE (n2)-[:productOf]->(n8) 
+            CREATE (n3)-[:productOf]->(n9) 
+
+            CREATE (n6)-[:provideDelivery]->(n4) 
+            CREATE (n6)-[:provideDelivery]->(n5) 
+            CREATE (n7)-[:provideDelivery]->(n4) 
+            CREATE (n7)-[:provideDelivery]->(n5) 
+
+
+
+            RETURN n1, n2, n3, n4, n5, n6, n7, n8, n9
+
+
+
+
+
+
+
+
+
+
+
+
+from fetch_api.utils import (
+    count_nodes,
+    fetch_nodes,
+    fetch_node_details,
+    fetch_perfume_names
+)
+
+from fetch_api.models import (
+    Perfume,
+    Brand,
+    SellingPlatform,
+    DeliveryOption
+)
+
+
+
+
+
+
+
+count_nodes({'node_type': 'Perfume','name': 'Escape', 'size': '','smell': '','lprice': 0,'hprice': 100000000000,'lrating': 0,'hrating': 5})
+fetch_nodes({'node_type': 'Perfume','name': 'Escape', 'size': '','smell': '','lprice': 0,'hprice': 100000000000,'lrating': 0,'hrating': 5,  'limit': 10,'page': 1})

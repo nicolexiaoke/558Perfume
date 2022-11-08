@@ -304,7 +304,7 @@
         nodeSearch.setFilters({
           'q': this._searchText(),
           'c': this._filters['country'],
-          'j': this._filters['jurisdiction'],
+          'j': this._filters['perfume_names'],
           's': this._filters['dataSource'],
         });
 
@@ -366,16 +366,18 @@
 
     fetchJurisdictions() {
       $.getJSON(
-        'fetch/jurisdictions'
+        'fetch/perfume_names'
       )
       .done(jurisdictions => {
         jurisdictions.response.data.forEach(jurisdiction => {
           this._jurisdictionList.push(jurisdiction);
+          console.log("done");
         });
       })
       .fail(() => {
         /** @todo Handle errors */
         console.log("Fetch error");
+        console.log("done");
       })
     }
 

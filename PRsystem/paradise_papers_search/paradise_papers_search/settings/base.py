@@ -16,19 +16,31 @@ from .env import env
 
 #Connect to Neo4j Database
 # config.DATABASE_URL = env('DATABASE_URL')  # default
-# config.DATABASE_URL = 'bolt://neo4j:diodes-petitions-skins@54.161.190.24:7687'
-config.DATABASE_URL = 'bolt://neo4j:amusements-insertions-paint@54.225.8.249:7687'
+# config.DATABASE_URL = 'bolt://neo4j:flames-throttle-cruiser@44.211.58.177:7687'
+config.DATABASE_URL = 'bolt://neo4j:perfumeKG@localhost:7687'
+
+# '''
+# connecting to auraDB
+# '''
+# user = 'neo4j'
+# psw = '1McmE-lDtVUMYBPUFsiQKscrqbD4M58Oc1hJOcKulcM'
+# uri = '36d638c4.databases.neo4j.io'
+    
+# config.DATABASE_URL = 'neo4j+s://{}:{}@{}'.format(user, psw, uri)
+# print(config.DATABASE_URL)
 
 
-DATABASES = {
-    'default': {
-        'NAME': 'papers.db',
-        'ENGINE': 'django.db.backends.sqlite3',
-        'USER': '',
-        'PASSWORD': '',
-        'PORT': '',
-    },
-}
+
+
+# DATABASES = {
+#     'default': {
+#         'NAME': 'papers.db',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'USER': '',
+#         'PASSWORD': '',
+#         'PORT': '',
+#     },
+# }
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
