@@ -1,9 +1,9 @@
 import os, sys
 path = __file__
 path = os.path.abspath(__file__)
-for _ in range(2):
-    print(path)
-    path = os.path.split(path)[0]
+path = os.path.split(path)[0]
+os.chdir(path)
+path = os.path.split(path)[0]
 sys.path.append(path)
 
 from Amazon.amazon import *
@@ -12,6 +12,21 @@ from modules.proj_os import *
 from lxml import etree
 from selenium import webdriver
 from time import sleep
+
+class CheckAntiCrawl:
+    import pyautogui as pag
+
+    def check(self):
+        while (True):
+            try:
+                x,y = self.pag.locateCenterOnScreen("./pics/notcarried.png", confidence=0.98)
+                print("Empty product detected.")
+                print("skipped.")
+                sleep(0.25)
+                # res = input("Is it handled? (y/n):")
+                return True
+            except:
+                return False
 
 class Sephora_Detail_Patch(PatchResult):
     def __init__(self, header: dict) -> None:
@@ -23,7 +38,7 @@ class Sephora_Detail_Patch(PatchResult):
         while (count < height):
             count += 30
             driver.execute_script(f"window.scrollTo(0, {count});")
-            sleep(0.05)
+            sleep(0.03)
 
     def __patch_details(self, details):
         flag = True
@@ -37,10 +52,12 @@ class Sephora_Detail_Patch(PatchResult):
                 flag = True
         return result
 
-    def get_result(self, driver, URL_pattern, **kwargs) -> Dict[str, str]:
+    def get_result(self, driver,checker, URL_pattern, **kwargs) -> Dict[str, str]:
         # driver = webdriver.Chrome("./chromedriver.exe")
         driver.get(URL_pattern)
         # self.__sroll_to_bottom(driver)
+        if checker.check():
+            return None
         self.node = etree.HTML(driver.page_source)
 
         title = self._get_joined_text("//*[@data-at='product_name']/text()", "")
@@ -48,24 +65,41 @@ class Sephora_Detail_Patch(PatchResult):
         brand = self._get_joined_text("//*[contains(@data-at,'brand_name')]//text()","")
         size = self._get_text_list("//div[@data-at='sku_name_label']//text()", None)[0]
         ratings = self._get_joined_text("//a/span[contains(@data-comp,'StarRating')]/@aria-label","")
-        style = []
-        shipping = ["Standard", "Pick up"]
-        comments = []
+        comments = self._get_comments(driver, **kwargs)
         details = self._get_text_list("//div[contains(@data-comp,'RegularProduct')]/div[contains(@data-comp,'StyledComponent')]/div[not(@*)]/div[contains(@data-comp,'StyledComponent')]/div[not(@*)]//text()", None)
         details = self.__patch_details(details)
         result =  {
-            "Brand": brand,
+            "brand": brand,
             "size" : size,
-            "title": title,
+            "name": title,
             "price": price,
-            "style": style,
-            "ratings": ratings,
+            "rating": ratings,
             "comments": comments,
-            "shipping": shipping,
+            "url": URL_pattern,
+            "platform": 1
         }
         result.update(details)
         self.node = None
         return result
+
+    def _get_comments(self,driver, max_len: int=10):
+        comments = []
+        i = 1
+        self.__sroll_to_bottom(driver)
+        while (i<=max_len):
+            print(f"\r    Crawling Comments:  Page {i}...", end=' ')
+            self.node = etree.HTML(driver.page_source)
+            comments.extend(self._get_text_list("//*[@id='ratings-reviews-container']/div/div[not(@*)]/div/div/div[2]/div/text()", ""))
+            next_page = driver.find_elements("xpath","//button[@title='Next page']")
+            if (len(next_page)):
+                driver.execute_script("arguments[0].scrollIntoView();", next_page[0]);
+                next_page[0].click()
+                i+=1
+            else: break
+            sleep(0.1)
+        print("done.")
+        return comments
+
 
     def get_page_urls(self, driver, page_pattern:str, max_page:int=30) -> List[str]:
         all_urls = []
@@ -105,7 +139,7 @@ if __name__ == "__main__":
               "burberry","giorgio-armani-beauty",
               "gucci"]
     sdp = Sephora_Detail_Patch(header)
-
+    check = CheckAntiCrawl()
     # get all detail page urls
     urls = []
     driver = webdriver.Chrome("./chromedriver.exe")
@@ -115,9 +149,13 @@ if __name__ == "__main__":
     items = []
     count =1
     total = len(urls)
-    for url in urls:
-        print(f"\r---> Processing item: {count}/{total}...", end='')
-        items.append(sdp.get_result(driver, url, max_len=20))
-        count += 1
-
+    try:
+        for url in urls:
+            print(f"---> Processing item: {count}/{total}...")
+            res = sdp.get_result(driver, check, url, max_len=10)
+            if res is not None:
+                items.append(res)
+            count += 1
+    except Exception as e:
+        print(e, e.args)
     parser.dump(f"{Get_Root_dir()}/data/sephora.jsonl", items)
