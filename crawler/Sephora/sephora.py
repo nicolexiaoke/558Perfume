@@ -1,6 +1,8 @@
 import os, sys
 path = __file__
+path = os.path.abspath(__file__)
 for _ in range(2):
+    print(path)
     path = os.path.split(path)[0]
 sys.path.append(path)
 
@@ -19,7 +21,7 @@ class Sephora_Detail_Patch(PatchResult):
         height = driver.execute_script("return document.body.scrollHeight")
         count = 0
         while (count < height):
-            count += 20
+            count += 30
             driver.execute_script(f"window.scrollTo(0, {count});")
             sleep(0.05)
 
@@ -52,6 +54,8 @@ class Sephora_Detail_Patch(PatchResult):
         details = self._get_text_list("//div[contains(@data-comp,'RegularProduct')]/div[contains(@data-comp,'StyledComponent')]/div[not(@*)]/div[contains(@data-comp,'StyledComponent')]/div[not(@*)]//text()", None)
         details = self.__patch_details(details)
         result =  {
+            "Brand": brand,
+            "size" : size,
             "title": title,
             "price": price,
             "style": style,
@@ -72,6 +76,7 @@ class Sephora_Detail_Patch(PatchResult):
             driver.get(page_pattern.format(page+1))
             self.__sroll_to_bottom(driver)
             elements = driver.find_elements("xpath", "//div[@data-comp='ProductGrid ']//a")
+            if (not len(elements)): break
             for element in elements:
                 href = element.get_attribute("href")
                 if ("product" in href):
@@ -94,19 +99,25 @@ if __name__ == "__main__":
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
     }
 
-    base_url = "https://www.sephora.com/shop/perfume?currentPage={0}"
+    # base_url = "https://www.sephora.com/shop/perfume?currentPage={0}"
+    base_url = "https://www.sephora.com/brand/{0}?currentPage={1}"
+    brands = ["chanel", "dior","lancome","guerlain",
+              "burberry","giorgio-armani-beauty",
+              "gucci"]
     sdp = Sephora_Detail_Patch(header)
 
     # get all detail page urls
+    urls = []
     driver = webdriver.Chrome("./chromedriver.exe")
-    urls = sdp.get_page_urls(driver, base_url, 5)
+    for brand in brands:
+        urls.extend(sdp.get_page_urls(driver, base_url.format(brand, "{0}"), 5))
     # get all items details
     items = []
     count =1
     total = len(urls)
     for url in urls:
         print(f"\r---> Processing item: {count}/{total}...", end='')
-        items.append(sdp.get_result(driver, url, max_len=0))
+        items.append(sdp.get_result(driver, url, max_len=20))
         count += 1
 
     parser.dump(f"{Get_Root_dir()}/data/sephora.jsonl", items)
