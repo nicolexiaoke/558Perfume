@@ -63,8 +63,13 @@ class Sephora_Detail_Patch(PatchResult):
         title = self._get_joined_text("//*[@data-at='product_name']/text()", "")
         price = self._get_text_list("//*[contains(@data-comp,'Price')]//text()", None)[0]
         brand = self._get_joined_text("//*[contains(@data-at,'brand_name')]//text()","")
-        size = self._get_text_list("//div[@data-at='sku_name_label']//text()", None)[0]
-        ratings = self._get_joined_text("//a/span[contains(@data-comp,'StarRating')]/@aria-label","")
+        size = self._get_text_list("//div[@data-at='sku_name_label']//text()", "")
+        if ("Size" not in " ".join(size) and "size" not in " ".join(size)):
+            size = self._get_text_list("//div[@data-at='sku_size_label']//text()", " ")
+        if (len(size)>1):
+            size = size[1]
+        else: size = size[0]
+        ratings = self._get_joined_text("//a/span[contains(@data-comp,'StarRating')]/@aria-label"," ")
         comments = self._get_comments(driver, **kwargs)
         details = self._get_text_list("//div[contains(@data-comp,'RegularProduct')]/div[contains(@data-comp,'StyledComponent')]/div[not(@*)]/div[contains(@data-comp,'StyledComponent')]/div[not(@*)]//text()", None)
         details = self.__patch_details(details)
@@ -149,13 +154,14 @@ if __name__ == "__main__":
     items = []
     count =1
     total = len(urls)
-    try:
+    # try:
+    if True:
         for url in urls:
             print(f"---> Processing item: {count}/{total}...")
             res = sdp.get_result(driver, check, url, max_len=10)
             if res is not None:
                 items.append(res)
             count += 1
-    except Exception as e:
-        print(e, e.args)
+    # except Exception as e:
+        # print(e, e.args)
     parser.dump(f"{Get_Root_dir()}/data/sephora.jsonl", items)

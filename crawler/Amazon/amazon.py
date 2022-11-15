@@ -2,6 +2,15 @@ from typing import Dict, List, Tuple
 from time import sleep
 import requests as rqs
 from lxml import etree
+import re
+
+import os, sys
+path = __file__
+path = os.path.abspath(__file__)
+path = os.path.split(path)[0]
+os.chdir(path)
+path = os.path.split(path)[0]
+sys.path.append(path)
 
 
 class PatchResult:
@@ -18,7 +27,7 @@ class PatchResult:
             return [if_null]
 
     def _get_joined_text(self, xpath:str, sep:str) ->str:
-        texts = self._get_text_list(xpath, "")
+        texts = self._get_text_list(xpath, sep)
         return sep.join(texts)
 
     def _get_details(self, remove_key: List[str]=[]):
@@ -90,24 +99,47 @@ class Amazon_Detail_Patch(PatchResult):
             return {}
         self.node = etree.HTML(r.text)
         title = self._get_joined_text("//*[@id='productTitle']/text()", "")
-        price = self._get_joined_text("//*[@id='corePrice_desktop']//*[@id='sns-base-price']/text()", "")
-        style = self._get_joined_text("//*[@id='variation_style_name']/div/span/text()", "")
+        price1 = self._get_joined_text("//*[@id='corePrice_desktop']//*[@id='sns-base-price']/text()", "")
+        price2 = self._get_joined_text("//*[@id='corePriceDisplay_desktop_feature_div']//div/span/span[@class='a-offscreen']//text()", "")
+        if price1!='': price = price1
+        elif price2!='': price=price2
+        else: price = None
+
         details = self._get_details(remove_key=["UPC", "ASIN", "Batteries"])
         ratings = self._get_ave_ratings()
         comments = self._get_comments(**kwargs)
         attr_key = self._get_text_list("//table[@class='a-normal a-spacing-micro']//tr/td[1]/span/text()", "")
         attr_val = self._get_text_list("//table[@class='a-normal a-spacing-micro']//tr/td[2]/span/text()", "")
         attrs = dict(zip(attr_key, attr_val))
+
+
         result =  {
-            "title": title,
-            "price": price,
-            "style": style,
+            "name": title,
+            "price": price if price else print("BAD PRICE.", URL_pattern),
+            "size": None,
+            "scent": None,
+            "brand": None,
+            "url": URL_pattern,
             "ratings": ratings,
             "comments": comments,
+            "platform": 0,
         }
-        result.update(attrs)
-        result.update(details)
-        # "attrs": attrs, "details": details,
+        attrs.update(details)
+        flag_brand = False
+        for key, val in attrs.items():
+            if re.search("scent", key, re.I):
+                result["scent"]=val
+            elif re.search("volume", key, re.I):
+                result["size"]=val
+            elif not flag_brand and re.search("fac", key, re.I):
+                result["brand"] = val
+            elif not flag_brand and re.search("brand", key, re.I):
+                result["brand"] = val
+                flag_brand = True
+
+        # if ("Brand" in result): result["brand"] = result["Brand"]
+        # else: result["brand"] = ''
+        # if ("Scent" not in result): result["Scent"] = ""
         self.node = None
         return result
 
@@ -147,14 +179,20 @@ if __name__ == "__main__":
     }
 
     tool = Amazon_Detail_Patch(header)
-    search_pattern = "https://www.amazon.com/s?k=perfume&page={0}&qid=1665350946&sprefix=perfu%2Caps%2C128&ref=sr_pg_{0}"
-    hrefs = tool.get_page_urls(search_pattern, 5)
+    search_pattern = "https://www.amazon.com/s?k=perfume+{0}&page={1}&qid=1665350946&sprefix=perfume+{0}%2Caps%2C128&ref=sr_pg_{1}"
+    hrefs = []
+    for brand in ["chanel", "dior","lancome","guerlain",
+              "burberry","giorgio-armani-beauty",
+              "gucci"]:
+        href= tool.get_page_urls(search_pattern.format(brand, "{0}"), 1)
+        if href is not None:
+            hrefs.extend(href)
 
     with open(Get_Root_dir() + "/data/amazon.jsonl", 'w', encoding='utf-8') as f:
         count =1
         total = len(hrefs)
         for item_url in hrefs:
             print(f"---> Processing item: {count}/{total}...")
-            result = tool.get_result(item_url,max_len=10)
+            result = tool.get_result(item_url, max_len=3)
             f.write(f"{result}\n")
             count += 1
