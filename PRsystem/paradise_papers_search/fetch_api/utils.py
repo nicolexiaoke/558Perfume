@@ -160,7 +160,7 @@ count_info:
     'lprice': ,
     'hprice': ,
     'lrating': ,
-    'hrating': 
+    'hrating':
 }
 '''
 
@@ -190,7 +190,7 @@ fetch_info:
     'lprice': ,
     'hprice': ,
     'lrating': ,
-    'hrating': 
+    'hrating':
     'limit': 10,
     'page': 1
 }
