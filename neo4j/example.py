@@ -31,9 +31,9 @@ class App:
         # To learn more about the Cypher syntax, see https://neo4j.com/docs/cypher-manual/current/
         # The Reference Card is also a good resource for keywords https://neo4j.com/docs/cypher-refcard/current/
         query = (
-            "CREATE (n1:Perfume { node_id: '1', name: 'Escape', size: '1.7 oz', smell: '', price: 31.99, rating: 4.5, comments:'I love Calvin Klein escape. Problem is I ordered it February 22 and its still not here. I had a second order and it already came. Love the prices, discounts, and convenience.' }) "
-            "CREATE (n2:Perfume { node_id: '2',name: 'Escape', size: '1.7 oz', smell: '', price: 30, rating: 4.8, comments:'One of my all time favorites! Great in ant season…'}) "
-            "CREATE (n3:Perfume { node_id: '3',name: 'Coach Platinum', size: '2 oz', smell: 'sexy', price: 54.99, rating: 4.9, comments:'A++ This… is a very nice fragrance. It s calm, soft, soothing, ugh it s just beautiful. If you want something crowd pleasing & that s not overwhelming give this a try. Can be worn year round night/ day & doesn t offend anyone. It s such a sexy & classy scent. I smelled this on paper & immediately knew I was GOING to buy the 100ML. The smell is like a soft kinda sweet powder, you definitely get that tonka bean & sandalwood with a hint of leather in the background to keep a manly tone. Next to PDM Layton, this is my second favorite Cologne. It s just sooo nice!! Highly recommended'}) "
+            "CREATE (n1:Perfume { node_id: '1', url: 'https://www.fragrancenet.com/cologne/calvin-klein/escape/edt#122757' ,name: 'Escape', size: '1.7 oz', smell: '', price: 31.99, rating: 4.5, comments:'I love Calvin Klein escape. Problem is I ordered it February 22 and its still not here. I had a second order and it already came. Love the prices, discounts, and convenience.' }) "
+            "CREATE (n2:Perfume { node_id: '2', url: 'https://www.fragrancenet.com/cologne/calvin-klein/escape/edt#122757' ,name: 'Escape', size: '1.7 oz', smell: '', price: 30, rating: 4.8, comments:'One of my all time favorites! Great in ant season…'}) "
+            "CREATE (n3:Perfume { node_id: '3', url: 'https://www.fragrancenet.com/cologne/coach/coach-platinum/eau-de-parfum#314403' ,name: 'Coach Platinum', size: '2 oz', smell: 'sexy', price: 54.99, rating: 4.9, comments:'A++ This… is a very nice fragrance. It s calm, soft, soothing, ugh it s just beautiful. If you want something crowd pleasing & that s not overwhelming give this a try. Can be worn year round night/ day & doesn t offend anyone. It s such a sexy & classy scent. I smelled this on paper & immediately knew I was GOING to buy the 100ML. The smell is like a soft kinda sweet powder, you definitely get that tonka bean & sandalwood with a hint of leather in the background to keep a manly tone. Next to PDM Layton, this is my second favorite Cologne. It s just sooo nice!! Highly recommended'}) "
 
             "CREATE (n4:DeliveryOption {node_id: '4',description:'FedEx'}) "
             "CREATE (n5:DeliveryOption {node_id: '5',description:'UPS'}) "
@@ -66,9 +66,9 @@ class App:
             "CREATE (n3)-[:listedOn]->(n6) "
             
             #brand
-            "CREATE (n1)-[:listedOn]->(n8) "
-            "CREATE (n2)-[:listedOn]->(n8) "
-            "CREATE (n3)-[:listedOn]->(n9) "
+            "CREATE (n1)-[:productOf]->(n8) "
+            "CREATE (n2)-[:productOf]->(n8) "
+            "CREATE (n3)-[:productOf]->(n9) "
 
             #provide delivery
             "CREATE (n6)-[:provideDelivery]->(n4) "

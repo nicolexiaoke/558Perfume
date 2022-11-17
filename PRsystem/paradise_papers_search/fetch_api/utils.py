@@ -1,5 +1,6 @@
 # from .constants import COUNTRIES, JURISDICTIONS, DATASOURCE
 from .constants import PERFUME_NAMES
+from neomodel import db
 
 from .models import (
     Perfume,
@@ -26,7 +27,9 @@ def filter_nodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, h
     node_type: Perfume/Brand/..
     search_text: key word to serch --> Perfume.nodes.filter(name__contains=search_text)
     '''
-
+    print('invoked by displayNodeSearch()')
+    print('node_type:', node_type)
+    print('search_text:', search_text)
     node_set = node_type.nodes
 
     # On DeliveryOption nodes we want to check the search_text against the description property
@@ -35,6 +38,8 @@ def filter_nodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, h
         node_set.filter(description__icontains=search_text)
     else:
         node_set.filter(name__icontains=search_text)
+        if size != '':
+            node_set.filter(size__icontains=size)
 
     # Only Perfume store size, smell, price, rating info
     # if node_type.__name__ == 'Perfume':
@@ -45,9 +50,106 @@ def filter_nodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, h
     #     node_set.filter(price__lte=hprice)
     #     node_set.filter(rating__lte=lrating)
 
+    # # print(node_set[0])
+    # print(node_set[1])
+
     return node_set
 
+def filter_ssnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, hprice = 10000000000, hrating = 5):
+    '''
+    node_type: Perfume/Brand/..
+    search_text: key word to serch --> Perfume.nodes.filter(name__contains=search_text)
+    '''
+    pre_node_set = node_type.nodes
+    if search_text != '':
+        pre_node_set.filter(name__icontains=search_text)
+    if size != '':
+        pre_node_set.filter(size__icontains=size)
 
+    
+    
+    seednode = pre_node_set[0]
+    '''
+        seednode:
+        {'node_properties': {'node_id': '1', 'name': 'Escape', 'size': '1.7 oz', 
+        'smell': '', 'price': 31.99, 'rating': 4.5, 
+        'comments': 'I love Calvin Klein escape. Problem is I ordered it February 22 and its still not here. 
+        I had a second order and it already came. Love the prices, discounts, and convenience.', 
+        'url': 'https://www.fragrancenet.com/cologne/calvin-klein/escape/edt#122757'}}
+    '''
+    seedid = seednode.node_id
+    node_set =  db.cypher_query("MATCH (:Perfume {node_id: $seedid})\
+         -[:haveSimilarScents]-> (n)\
+        RETURN DISTINCT n",\
+            {'seedid': seedid}
+        )[0]
+    
+    SSNODE = [node_type.inflate(n[0]) for n in node_set]
+    SSNODE.insert(0, seednode)
+    
+    print('\n\n in filter_ssnodes, noe_set:', SSNODE)
+
+    return SSNODE
+
+def filter_spnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, hprice = 10000000000, hrating = 5):
+    '''
+    node_type: Perfume/Brand/..
+    search_text: key word to serch --> Perfume.nodes.filter(name__contains=search_text)
+    '''
+    pre_node_set = node_type.nodes
+    if search_text != '':
+        pre_node_set.filter(name__icontains=search_text)
+    if size != '':
+        pre_node_set.filter(size__icontains=size)
+
+    seednode = pre_node_set[0]
+    seedid = seednode.node_id
+    node_set =  db.cypher_query("MATCH (:Perfume {node_id: $seedid})\
+         -[:haveSimilarPrices]-> (n)\
+        RETURN DISTINCT n",\
+            {'seedid': seedid}
+        )[0]
+    
+    SPNODE = [node_type.inflate(n[0]) for n in node_set]
+    SPNODE.insert(0, seednode)
+    
+    print('\n\n in filter_spnodes, noe_set:', SPNODE)
+
+    return SPNODE
+
+def filter_sbnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, hprice = 10000000000, hrating = 5):
+    '''
+    node_type: Perfume/Brand/..
+    search_text: key word to serch --> Perfume.nodes.filter(name__contains=search_text)
+    '''
+    pre_node_set = node_type.nodes
+    if search_text != '':
+        pre_node_set.filter(name__icontains=search_text)
+    if size != '':
+        pre_node_set.filter(size__icontains=size)
+
+    
+    
+    seednode = pre_node_set[0]
+    seedid = seednode.node_id
+    seedbrand = db.cypher_query("MATCH (:Perfume {node_id: '1'})\
+                                -[:productOf]-> (n)\
+                                return n.name")[0][0][0]
+
+    print(seedbrand)
+
+    node_set =  db.cypher_query("MATCH (:Perfume {node_id: $seedid})\
+                          -[:productOf]-> (:Brand {name: $seedbrand}) <-[:productOf]-(n)\
+                        return n",\
+                         {'seedid': seedid, 'seedbrand': seedbrand}
+        )[0]
+    
+    SSNODE = [node_type.inflate(n[0]) for n in node_set]
+    SSNODE.insert(0, seednode)
+    
+    print('\n\n in filter_ssnodes, noe_set:', SSNODE)
+
+    return SSNODE
 '''
 count_info:
 {
@@ -111,6 +213,57 @@ def fetch_nodes(fetch_info):
     return [node.serialize for node in fetched_nodes]
     # return fetched_nodes
 
+def fetch_ssnodes(fetch_info):
+    node_type       = fetch_info['node_type']
+    search_word     = fetch_info['name']
+    size                 = fetch_info['size']
+    smell            = fetch_info['smell']
+    lprice             = fetch_info['lprice']
+    hprice             = fetch_info['hprice']
+    lrating             = fetch_info['lrating']
+    hrating             = fetch_info['hrating']
+    limit           = fetch_info['limit']
+    start           = ((fetch_info['page'] - 1) * limit)
+    end             = start + limit
+    node_set           = filter_ssnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
+    fetched_nodes   = node_set[start:end]
+
+    return [node.serialize for node in fetched_nodes]
+
+
+def fetch_sbnodes(fetch_info):
+    node_type       = fetch_info['node_type']
+    search_word     = fetch_info['name']
+    size                 = fetch_info['size']
+    smell            = fetch_info['smell']
+    lprice             = fetch_info['lprice']
+    hprice             = fetch_info['hprice']
+    lrating             = fetch_info['lrating']
+    hrating             = fetch_info['hrating']
+    limit           = fetch_info['limit']
+    start           = ((fetch_info['page'] - 1) * limit)
+    end             = start + limit
+    node_set           = filter_sbnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
+    fetched_nodes   = node_set[start:end]
+
+    return [node.serialize for node in fetched_nodes]
+
+def fetch_spnodes(fetch_info):
+    node_type       = fetch_info['node_type']
+    search_word     = fetch_info['name']
+    size                 = fetch_info['size']
+    smell            = fetch_info['smell']
+    lprice             = fetch_info['lprice']
+    hprice             = fetch_info['hprice']
+    lrating             = fetch_info['lrating']
+    hrating             = fetch_info['hrating']
+    limit           = fetch_info['limit']
+    start           = ((fetch_info['page'] - 1) * limit)
+    end             = start + limit
+    node_set           = filter_spnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
+    fetched_nodes   = node_set[start:end]
+
+    return [node.serialize for node in fetched_nodes]
 
 '''
 node_info:
@@ -136,6 +289,27 @@ def fetch_node_details(node_info):
 
 def fetch_perfume_names():
     return PERFUME_NAMES
+
+def fetch_perfume_sizes(name_info):
+    print('in utils, fetch_perfume_sizes, name_info:', name_info)
+    name_info = name_info
+    if name_info != '':
+        perfume_sizes = db.cypher_query(
+        "MATCH (n:Perfume {name: $name_info})\
+        RETURN DISTINCT n.size AS perfume_sizes", {'name_info': name_info} )[0]
+    else:
+        perfume_sizes = db.cypher_query(
+        '''
+        MATCH (n:Perfume) 
+        RETURN DISTINCT n.size AS perfume_sizes
+        '''
+        )[0]
+
+    PERFUME_SIZES = sorted([perfume_size[0] for perfume_size in perfume_sizes])
+    
+    return PERFUME_SIZES
+
+
 
 
 # def fetch_jurisdictions():

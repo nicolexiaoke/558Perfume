@@ -9,6 +9,17 @@ perfume_names = db.cypher_query(
 
 PERFUME_NAMES = sorted([perfume_name[0] for perfume_name in perfume_names])
 
+
+
+# perfume_sizes = db.cypher_query(
+#     '''
+#     MATCH (n:Perfume) 
+#     RETURN DISTINCT n.size AS perfume_sizes
+#     '''
+# )[0]
+
+# PERFUME_SIZES = sorted([perfume_size[0] for perfume_size in perfume_sizes])
+
 # jurisdictions = db.cypher_query(
 #     '''
 #     MATCH (n)

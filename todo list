@@ -1,0 +1,27 @@
+1. crawling
+2. add nodeid
+3. input data into neo4j
+4. entity linking for perfume relationship
+    * add a score on the 'similar-' relations
+5. input linking into neo4j
+
+
+
+
+
+
+
+
+now:
+1. random recommendation: 
+    1) purely sort by ratings √
+    2) search by perfume Name √
+    3) give url instead of comments √
+
+2. lowest price based recommendation
+    1) list all item with price sorted (add new view) √
+    2) restrict the size √
+
+3. similar recommendation: (same/similar) scent, same brand, similar price
+    1) select perfume name and sizes
+    2)4 buttons: similar scents items, same brand items, similar price items, auto recommendation(overal score)

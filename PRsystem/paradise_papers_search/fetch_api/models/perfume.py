@@ -21,6 +21,7 @@ class Perfume(DjangoNode):
     smell = StringProperty()
     price = FloatProperty()
     rating = FloatProperty()
+    url = StringProperty()
     comments = StringProperty()
 
     haveSimilarPrices = RelationshipFrom('.perfume.Perfume', 'haveSimilarPrices')
@@ -51,6 +52,7 @@ class Perfume(DjangoNode):
                 'price': self.price,
                 'rating': self.rating,
                 'comments': self.comments,
+                'url' : self.url,
             },
         }
 

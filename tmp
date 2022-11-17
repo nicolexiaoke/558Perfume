@@ -74,3 +74,8 @@ from fetch_api.models import (
 
 count_nodes({'node_type': 'Perfume','name': 'Escape', 'size': '','smell': '','lprice': 0,'hprice': 100000000000,'lrating': 0,'hrating': 5})
 fetch_nodes({'node_type': 'Perfume','name': 'Escape', 'size': '','smell': '','lprice': 0,'hprice': 100000000000,'lrating': 0,'hrating': 5,  'limit': 10,'page': 1})
+
+fetch_nodes({'c': '','j': '', 'q': "", 's': '', 't': "Perfume"})
+
+"https://www.fragrancenet.com/cologne/calvin-klein/escape/edt#122757"
+"https://www.fragrancenet.com/cologne/coach/coach-platinum/eau-de-parfum#314403"

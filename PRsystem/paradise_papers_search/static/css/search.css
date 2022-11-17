@@ -42,3 +42,7 @@
 .clickable-rows tbody tr {
   cursor: pointer;
 }
+
+.clickable-header thead th {
+  cursor: pointer;
+}
