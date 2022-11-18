@@ -293,6 +293,7 @@ def fetch_perfume_names():
 def fetch_perfume_sizes(name_info):
     print('in utils, fetch_perfume_sizes, name_info:', name_info)
     name_info = name_info
+    
     if name_info != '':
         perfume_sizes = db.cypher_query(
         "MATCH (n:Perfume {name: $name_info})\
