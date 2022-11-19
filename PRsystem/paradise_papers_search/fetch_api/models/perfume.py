@@ -1,5 +1,6 @@
 from neomodel import (
     StringProperty,
+    ArrayProperty,
     FloatProperty,
     IntegerProperty,
     StructuredNode,
@@ -22,7 +23,7 @@ class Perfume(DjangoNode):
     price = FloatProperty()
     rating = FloatProperty()
     url = StringProperty()
-    comments = StringProperty()
+    comments = ArrayProperty()
 
     haveSimilarPrices = RelationshipFrom('.perfume.Perfume', 'haveSimilarPrices')
     haveSimilarPrices = RelationshipTo('.perfume.Perfume', 'haveSimilarPrices')
