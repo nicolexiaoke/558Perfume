@@ -38,8 +38,8 @@ class App:
             # "CREATE (n4:DeliveryOption {node_id: '4',description:'FedEx'}) "
             # "CREATE (n5:DeliveryOption {node_id: '5',description:'UPS'}) "
             
-            "CREATE (n6:SellingPlatform {node_id: '6',name:'fragrancenet', has_offline_store:'yes'}) "
-            "CREATE (n7:SellingPlatform {node_id: '7',name:'amazon', has_offline_store:'yes'}) "
+            "CREATE (n6:SellingPlatform {node_id: '6',name:'fragrancenet', has_offline_store:'no'}) "
+            "CREATE (n7:SellingPlatform {node_id: '7',name:'amazon', has_offline_store:'no'}) "
             
             "CREATE (n8:Brand {node_id: '8',name:'calvin klein'}) "
             "CREATE (n9:Brand {node_id: '9',name:'coach'}) "
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     # Aura queries use an encrypted connection using the "bolt" URI scheme
     uri = "bolt://localhost:7687"
     user = "neo4j"
-    password = "Perfume_tmp"
+    password = "perfumeKG"
     app = App(uri, user, password)
     app.create_perfume()
     app.close()

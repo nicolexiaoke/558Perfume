@@ -135,7 +135,7 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
     plt_name = plt_info['name']
     plt_store = plt_info['store']
     add_platform = 'CREATE (t'+plt_id+':SellingPlatform {name: "'+ \
-            plt_name+f'", has_offine_store: "{plt_store}", node_id: "t{plt_id}" '+'}) '
+            plt_name+f'", has_offline_store: "{plt_store}", node_id: "t{plt_id}" '+'}) '
 
     for record in data:
         # processing data
@@ -169,7 +169,7 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
         )
         # print(add_relation)
         perfume_id += 1
-        break
+        # break
 
     # run query:
     return [add_perfume, add_brand, add_platform, add_relation]
