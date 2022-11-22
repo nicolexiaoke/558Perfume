@@ -55,6 +55,7 @@ def hexstring_to_normal(string: str):
     return new_url
 
 def sephora_process(record: Dict[str, str]):
+    # print(record)
     record["name"] = record["name"].split("Eau")[0].strip()
     record["brand"] = record["brand"].strip().lower()
     size = re.search("[0-9]+.*[0-9]*.*(oz|ml)", record["size"],re.I)
@@ -114,10 +115,13 @@ def fragranceNet_process(record: Dict[str, str]):
 
     comments =  [i[1].replace("\"","\'") for i in record["comments"]]
     record["comments"] = comments
+    # print(record)
     return record
 
 def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
-    global perfume_id, brand_id, brand;
+    # print(data)
+
+    global perfume_id, brand_id, brand
 
     # Query String
     add_perfume = ""
@@ -135,6 +139,7 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
     add_platform = 'CREATE ( t'+plt_id+':Platform {name: "'+ \
             plt_name+'", has_offine_store: '+plt_store+ \
             ', node_id: "'+ f"t{plt_id}"+'"}) '
+    # print(add_platform)
 
     for record in data:
         # processing data
@@ -149,7 +154,8 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
                 '{name: "'+ record["brand"] +'", node_id: "' + f"b{brand_id}" +'"}'
             )
             brand_id += 1
-
+            
+        # print(add_brand)
 
         # Add Perfume Entity
         line = "CREATE (n{0}:Perfume {1}) "
@@ -158,13 +164,16 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
         r = line.format(perfume_id, "{"+
             ", ".join([f"node_id: 'n{perfume_id}'",line2,line3])+"}")
         add_perfume += r
+        # print(add_perfume)
 
         # Add relation
         add_relation += f"CREATE (n{perfume_id})-[:listedOn]->(t{plt_id}) "
         add_relation += "CREATE (n{0})-[:productOf]->({1}) ".format(
             perfume_id, brand[record["brand"]]
         )
+        # print(add_relation)
         perfume_id += 1
+        break
 
     # run query:
     tx.run(" ".join([add_perfume, add_brand, add_platform, add_relation]))
@@ -180,7 +189,7 @@ if __name__ == "__main__":
 
     uri = "bolt://localhost:7687"
     user = "neo4j"
-    password = "perfumeKG"
+    password = "Perfume_tmp"
 
     platform_infos = [
         {"name":"Amazon", "id": '0', "store": '0', "data": "./data/amazon.jsonl", "func": amazon_process},

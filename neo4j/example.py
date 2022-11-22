@@ -31,34 +31,34 @@ class App:
         # To learn more about the Cypher syntax, see https://neo4j.com/docs/cypher-manual/current/
         # The Reference Card is also a good resource for keywords https://neo4j.com/docs/cypher-refcard/current/
         query = (
-            "CREATE (n1:Perfume { node_id: '1', url: 'https://www.fragrancenet.com/cologne/calvin-klein/escape/edt#122757' ,name: 'Escape', size: '1.7 oz', smell: '', price: 31.99, rating: 4.5, comments:['I love Calvin Klein escape. Problem is I ordered it February 22 and its still not here. I had a second order and it already came. Love the prices, discounts, and convenience.'] }) "
-            "CREATE (n2:Perfume { node_id: '2', url: 'https://www.fragrancenet.com/cologne/calvin-klein/escape/edt#122757' ,name: 'Escape', size: '1.7 oz', smell: '', price: 30, rating: 4.8, comments:['One of my all time favorites! Great in ant season…', 'Good!']}) "
+            "CREATE (n1:Perfume { node_id: '1', url: 'https://www.fragrancenet.com/cologne/calvin-klein/escape/edt#122757' ,name: 'Escape', size: '1.7 oz', smell: 'floral', price: 31.99, rating: 4.5, comments:['I love Calvin Klein escape. Problem is I ordered it February 22 and its still not here. I had a second order and it already came. Love the prices, discounts, and convenience.'] }) "
+            "CREATE (n2:Perfume { node_id: '2', url: 'https://www.fragrancenet.com/cologne/calvin-klein/escape/edt#122757' ,name: 'Escape', size: '1.7 oz', smell: 'Floral', price: 30, rating: 4.8, comments:['One of my all time favorites! Great in ant season…', 'Good!']}) "
             "CREATE (n3:Perfume { node_id: '3', url: 'https://www.fragrancenet.com/cologne/coach/coach-platinum/eau-de-parfum#314403' ,name: 'Coach Platinum', size: '2 oz', smell: 'sexy', price: 54.99, rating: 4.9, comments:['A++ This… is a very nice fragrance. It s calm, soft, soothing, ugh it s just beautiful. If you want something crowd pleasing & that s not overwhelming give this a try. Can be worn year round night/ day & doesn t offend anyone. It s such a sexy & classy scent. I smelled this on paper & immediately knew I was GOING to buy the 100ML. The smell is like a soft kinda sweet powder, you definitely get that tonka bean & sandalwood with a hint of leather in the background to keep a manly tone. Next to PDM Layton, this is my second favorite Cologne. It s just sooo nice!! Highly recommended']}) "
 
-            "CREATE (n4:DeliveryOption {node_id: '4',description:'FedEx'}) "
-            "CREATE (n5:DeliveryOption {node_id: '5',description:'UPS'}) "
+            # "CREATE (n4:DeliveryOption {node_id: '4',description:'FedEx'}) "
+            # "CREATE (n5:DeliveryOption {node_id: '5',description:'UPS'}) "
             
-            "CREATE (n6:SellingPlatform {node_id: '6',name:'fragrancenet'}) "
-            "CREATE (n7:SellingPlatform {node_id: '7',name:'amazon'}) "
+            "CREATE (n6:SellingPlatform {node_id: '6',name:'fragrancenet', has_offline_store:'yes'}) "
+            "CREATE (n7:SellingPlatform {node_id: '7',name:'amazon', has_offline_store:'yes'}) "
             
             "CREATE (n8:Brand {node_id: '8',name:'calvin klein'}) "
             "CREATE (n9:Brand {node_id: '9',name:'coach'}) "
 
             #relationships
             #intra perfume relations
-            "CREATE (n1)-[:sameAs]->(n2)" 
-            "CREATE (n2)-[:sameAs]->(n1)" 
-            "CREATE (n1)-[:haveSimilarPrices]->(n2)" 
-            "CREATE (n2)-[:haveSimilarPrices]->(n1)" 
-            "CREATE (n1)-[:haveSimilarScents]->(n2)" 
-            "CREATE (n2)-[:haveSimilarScents]->(n1)" 
+            # "CREATE (n1)-[:sameAs]->(n2)" 
+            # "CREATE (n2)-[:sameAs]->(n1)" 
+            # "CREATE (n1)-[:haveSimilarPrices]->(n2)" 
+            # "CREATE (n2)-[:haveSimilarPrices]->(n1)" 
+            # "CREATE (n1)-[:haveSimilarScents]->(n2)" 
+            # "CREATE (n2)-[:haveSimilarScents]->(n1)" 
 
-            #delivery
-            "CREATE (n1)-[:deliverBy]->(n4) "
-            "CREATE (n1)-[:deliverBy]->(n5) "
-            "CREATE (n2)-[:deliverBy]->(n4) "
-            "CREATE (n2)-[:deliverBy]->(n5) "
-            "CREATE (n3)-[:deliverBy]->(n4) "
+            # #delivery
+            # "CREATE (n1)-[:deliverBy]->(n4) "
+            # "CREATE (n1)-[:deliverBy]->(n5) "
+            # "CREATE (n2)-[:deliverBy]->(n4) "
+            # "CREATE (n2)-[:deliverBy]->(n5) "
+            # "CREATE (n3)-[:deliverBy]->(n4) "
             
             #selling platforms
             "CREATE (n1)-[:listedOn]->(n6) "
@@ -70,13 +70,13 @@ class App:
             "CREATE (n2)-[:productOf]->(n8) "
             "CREATE (n3)-[:productOf]->(n9) "
 
-            #provide delivery
-            "CREATE (n6)-[:provideDelivery]->(n4) "
-            "CREATE (n6)-[:provideDelivery]->(n5) "
-            "CREATE (n7)-[:provideDelivery]->(n4) "
-            "CREATE (n7)-[:provideDelivery]->(n5) "
+            # #provide delivery
+            # "CREATE (n6)-[:provideDelivery]->(n4) "
+            # "CREATE (n6)-[:provideDelivery]->(n5) "
+            # "CREATE (n7)-[:provideDelivery]->(n4) "
+            # "CREATE (n7)-[:provideDelivery]->(n5) "
 
-            "RETURN n1, n2, n3, n4, n5, n6, n7, n8, n9"
+            "RETURN n1, n2, n3, n6, n7, n8, n9"
         )
         result = tx.run(query)
         for row in result:
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     # Aura queries use an encrypted connection using the "bolt" URI scheme
     uri = "bolt://localhost:7687"
     user = "neo4j"
-    password = "perfumeKG"
+    password = "Perfume_tmp"
     app = App(uri, user, password)
     app.create_perfume()
     app.close()

@@ -11,6 +11,7 @@ from .nodeutils import NodeUtils
 class SellingPlatform(StructuredNode, NodeUtils):
     name      = StringProperty()
     node_id       = StringProperty(index = True)
+    has_offline_store = StringProperty()
     
     listedOn  = RelationshipFrom('.perfume.Perfume', 'listedOn')
     provideDelivery = RelationshipTo('.delivery_option.DeliveryOption', 'provideDelivery')
