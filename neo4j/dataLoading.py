@@ -138,7 +138,9 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
 
     for record in data:
         # processing data
-        record = plt_info["func"](record)
+        record: Dict[str, str] = plt_info["func"](record)
+        record["rating"] = record["ratings"]
+        record["name"] = re.sub("[-_\'\"]", " ",record["name"]).lower()
 
         # Add Brand Entity
         if (record["brand"] not in brand):
