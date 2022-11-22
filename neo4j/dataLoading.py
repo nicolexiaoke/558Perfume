@@ -124,7 +124,7 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
     add_relation = ""
 
     nonstr = ['price', 'rating', 'comments']
-    string = ['name', 'size', 'scent', 'brand', 'url']
+    string = ['name', 'size', 'scent', 'url']
 
     # Add Platform Entity
     plt_id = plt_info['id']
@@ -137,7 +137,7 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
         # processing data
         record: Dict[str, str] = plt_info["func"](record)
         record["rating"] = record["ratings"]
-        record["name"] = re.sub("[\x01-\x19\x7b-\x7f\'\"]",'', record["name"])
+        record["name"] = re.sub("[\x01-\x19\x7b-\x7f\'\".]",'', record["name"])
 
         # Add Brand Entity
         if (record["brand"] not in all_brands):
