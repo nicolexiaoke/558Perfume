@@ -4,15 +4,6 @@ import requests as rqs
 from lxml import etree
 import re
 
-import os, sys
-path = __file__
-path = os.path.abspath(__file__)
-path = os.path.split(path)[0]
-os.chdir(path)
-path = os.path.split(path)[0]
-sys.path.append(path)
-
-
 class PatchResult:
     def __init__(self, domain: str, header: dict) -> None:
         self.node = None
@@ -160,10 +151,12 @@ class Amazon_Detail_Patch(PatchResult):
         return all_urls
 
 if __name__ == "__main__":
-    import sys, os
+    import os, sys
     path = __file__
-    for _ in range(2):
-        path = os.path.split(path)[0]
+    path = os.path.abspath(__file__)
+    path = os.path.split(path)[0]
+    os.chdir(path)
+    path = os.path.split(path)[0]
     sys.path.append(path)
     from modules.proj_os import Get_Root_dir
     header = {
@@ -184,7 +177,7 @@ if __name__ == "__main__":
     for brand in ["chanel", "dior","lancome","guerlain",
               "burberry","giorgio-armani-beauty",
               "gucci"]:
-        href= tool.get_page_urls(search_pattern.format(brand, "{0}"), 1)
+        href= tool.get_page_urls(search_pattern.format(brand, "{0}"), 4)
         if href is not None:
             hrefs.extend(href)
 
