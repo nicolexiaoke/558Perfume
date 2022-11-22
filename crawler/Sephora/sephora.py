@@ -1,10 +1,11 @@
-import os, sys
-path = __file__
-path = os.path.abspath(__file__)
-path = os.path.split(path)[0]
-os.chdir(path)
-path = os.path.split(path)[0]
-sys.path.append(path)
+if __name__ == "__main__":
+    import os, sys
+    path = __file__
+    path = os.path.abspath(__file__)
+    path = os.path.split(path)[0]
+    os.chdir(path)
+    path = os.path.split(path)[0]
+    sys.path.append(path)
 
 from Amazon.amazon import *
 from modules import jsonl as parser
@@ -147,21 +148,21 @@ if __name__ == "__main__":
     check = CheckAntiCrawl()
     # get all detail page urls
     urls = []
+    print(os.getcwd())
     driver = webdriver.Chrome("./chromedriver.exe")
     for brand in brands:
-        urls.extend(sdp.get_page_urls(driver, base_url.format(brand, "{0}"), 5))
+        urls.extend(sdp.get_page_urls(driver, base_url.format(brand, "{0}"), 10))
     # get all items details
     items = []
     count =1
     total = len(urls)
-    # try:
-    if True:
+    try:
         for url in urls:
             print(f"---> Processing item: {count}/{total}...")
             res = sdp.get_result(driver, check, url, max_len=10)
             if res is not None:
                 items.append(res)
             count += 1
-    # except Exception as e:
-        # print(e, e.args)
+    except Exception as e:
+        print(e, e.args)
     parser.dump(f"{Get_Root_dir()}/data/sephora.jsonl", items)

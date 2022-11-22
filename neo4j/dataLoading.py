@@ -2,9 +2,6 @@ from typing import List, Dict, Any
 import re
 from typing import List, Dict, Any
 from neo4j import GraphDatabase
-import logging
-from neo4j.exceptions import ServiceUnavailable
-
 ### ---> data splitting:
 
 ### Original Table:
@@ -31,9 +28,10 @@ from neo4j.exceptions import ServiceUnavailable
 
 
 perfume_id = brand_id = 1
-brand = {}
-EMPTY_STRING = 'null'
-EMPTY_FLOAT = 'null'
+all_brands = {}
+EMPTY_STRING = 'NULL'
+EMPTY_RATING_FLOAT = 0
+EMPTY_PRICING_FLOAT = ~(-1 ^ (1<<31))
 
 def hexstring_to_normal(string: str):
     if ("+" in string): return string
@@ -60,9 +58,9 @@ def sephora_process(record: Dict[str, str]):
     size = re.search("[0-9]+.*[0-9]*.*(oz|ml)", record["size"],re.I)
     record["size"] = size.group().lower() if size else EMPTY_STRING
     rating = re.search("[0-9]+\.*[0-9]*" ,record['rating'])
-    record["ratings"] = rating.group() if rating else EMPTY_FLOAT
+    record["ratings"] = rating.group() if rating else EMPTY_RATING_FLOAT
     price = re.search("[0-9]+\.*[0-9]*", record["price"])
-    record["price"] = price.group() if price else EMPTY_FLOAT
+    record["price"] = price.group() if price else EMPTY_PRICING_FLOAT
     for key in list(record.keys()):
         if re.search("scent", key, re.I):
             if record[key]:
@@ -88,11 +86,11 @@ def amazon_process(record: Dict[str, str]):
         record["size"] = EMPTY_STRING
 
     ratings = re.search("[0-9]+\.*[0-9]*" ,record["ratings"]["Overall"][0])
-    record["ratings"] = ratings.group() if ratings else EMPTY_FLOAT
+    record["ratings"] = ratings.group() if ratings else EMPTY_RATING_FLOAT
     if record["price"]:
         price = re.search("[0-9]+\.*[0-9]*", record["price"])
-        record["price"] = price.group() if price else EMPTY_FLOAT
-    else: record["price"] = EMPTY_FLOAT
+        record["price"] = price.group() if price else EMPTY_PRICING_FLOAT
+    else: record["price"] = EMPTY_PRICING_FLOAT
     comments =  [i[1].replace("\"","\'") for i in record["comments"]]
     record["comments"] = comments
     if (not record["scent"]): record["scent"] = EMPTY_STRING
@@ -108,16 +106,16 @@ def fragranceNet_process(record: Dict[str, str]):
     if not record["scent"]:
         record["scent"] = EMPTY_STRING
     if not record["ratings"]:
-        record["ratings"] = EMPTY_FLOAT
+        record["ratings"] = EMPTY_RATING_FLOAT
     price = re.search("[0-9]+\.*[0-9]*", record["price"])
-    record["price"] = price.group() # if price else EMPTY_FLOAT
+    record["price"] = price.group() if price else EMPTY_PRICING_FLOAT
 
     comments =  [i[1].replace("\"","\'") for i in record["comments"]]
     record["comments"] = comments
     return record
 
 def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
-    global perfume_id, brand_id, brand;
+    global perfume_id, brand_id, all_brands;
 
     # Query String
     add_perfume = ""
@@ -132,19 +130,18 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
     plt_id = plt_info['id']
     plt_name = plt_info['name']
     plt_store = plt_info['store']
-    add_platform = 'CREATE ( t'+plt_id+':Platform {name: "'+ \
-            plt_name+'", has_offine_store: '+plt_store+ \
-            ', node_id: "'+ f"t{plt_id}"+'"}) '
+    add_platform = 'CREATE (t'+plt_id+':SellingPlatform {name: "'+ \
+            plt_name+f'", has_offine_store: "{plt_store}", node_id: "t{plt_id}" '+'}) '
 
     for record in data:
         # processing data
         record: Dict[str, str] = plt_info["func"](record)
         record["rating"] = record["ratings"]
-        # record["name"] = re.sub("[-_\'\"]", " ",record["name"]).lower()
+        record["name"] = re.sub("[\x01-\x19\x7b-\x7f\'\"]",'', record["name"])
 
         # Add Brand Entity
-        if (record["brand"] not in brand):
-            brand[record["brand"]] = f"b{brand_id}"
+        if (record["brand"] not in all_brands):
+            all_brands[record["brand"]] = f"b{brand_id}"
             add_brand += "CREATE ( b{0}:Brand {1}) ".format(brand_id,
                 '{name: "'+ record["brand"] +'", node_id: "' + f"b{brand_id}" +'"}'
             )
@@ -152,7 +149,7 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
 
 
         # Add Perfume Entity
-        line = "CREATE (n{0}:Perfume {1}) "
+        line = " CREATE (n{0}:Perfume {1}) "
         line2 = ", ".join(map(lambda x: f'{x}:"{record[x]}"', string))
         line3 = ", ".join(map(lambda x: f'{x}: {record[x]}', nonstr))
         r = line.format(perfume_id, "{"+
@@ -162,13 +159,12 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
         # Add relation
         add_relation += f"CREATE (n{perfume_id})-[:listedOn]->(t{plt_id}) "
         add_relation += "CREATE (n{0})-[:productOf]->({1}) ".format(
-            perfume_id, brand[record["brand"]]
+            perfume_id, all_brands[record["brand"]]
         )
         perfume_id += 1
 
     # run query:
-    tx.run(" ".join([add_perfume, add_brand, add_platform, add_relation]))
-    return None
+    return [add_perfume, add_brand, add_platform, add_relation]
 
 
 if __name__ == "__main__":
@@ -183,19 +179,28 @@ if __name__ == "__main__":
     password = "perfumeKG"
 
     platform_infos = [
-        {"name":"Amazon", "id": '0', "store": '0', "data": "./data/amazon.jsonl", "func": amazon_process},
-        {"name":"Sephora", "id": "1", "store": '1', "data": "./data/sephora.jsonl", "func": sephora_process},
-        {"name": "FragranceNet", "id": '2', "store": '0', "data": "./data/fragranceNet.jsonl", "func": fragranceNet_process},
+        {"name":"Amazon", "id": '0', "store": 'no', "data": "./data/amazon.jsonl", "func": amazon_process},
+        {"name":"Sephora", "id": "1", "store": 'yes', "data": "./data/sephora.jsonl", "func": sephora_process},
+        {"name": "FragranceNet", "id": '2', "store": 'no', "data": "./data/fragranceNet.jsonl", "func": fragranceNet_process},
     ]
+
+    add_perfume = ""
+    add_brand =  ""
+    add_platform = ""
+    add_relation = ""
 
     driver = GraphDatabase.driver(uri, auth=(user, password))
     with driver.session(database="neo4j") as session:
         for info in platform_infos:
-            result = session.execute_write(
+            perfume, brand, platform, relation = session.execute_write(
                 commit_ent_rel,
                 jsonl.load_to_list(info["data"]),
                 info
             )
-    # commit_ent_rel_sephora(data)
+            add_perfume += perfume
+            add_brand += brand
+            add_platform += platform
+            add_relation += relation
+        session.run("".join([add_perfume, add_brand, add_platform, add_relation]))
 
 
