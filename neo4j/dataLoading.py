@@ -1,3 +1,4 @@
+from functools import reduce
 from typing import List, Dict, Any
 import re
 from typing import List, Dict, Any
@@ -116,7 +117,7 @@ def fragranceNet_process(record: Dict[str, str]):
 
 def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
     global perfume_id, brand_id, all_brands;
-
+    _brand_name = {}
     # Query String
     add_perfume = ""
     add_brand = ""
@@ -135,9 +136,19 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
 
     for record in data:
         # processing data
+        if not len(record): continue
         record: Dict[str, str] = plt_info["func"](record)
         record["rating"] = record["ratings"]
         record["name"] = re.sub("[\x01-\x19\x7b-\x7f\'\"]",'', record["name"])
+        if record["brand"]:
+            record["brand"] = record["brand"].lower()
+            _brand_name[record['name']] = record["brand"]
+        else:
+            record["brand"] = _brand_name[record['name']] if record['name'] in _brand_name else EMPTY_STRING
+
+        if reduce(lambda x,y: x or y, map(lambda x: re.search(x, record["name"], re.I),
+                                        ["Mascara", "Lip", "Conceal", "Lash", 'primer']), False):
+            continue
 
         # Add Brand Entity
         if (record["brand"] not in all_brands):
@@ -201,6 +212,8 @@ if __name__ == "__main__":
             add_brand += brand
             add_platform += platform
             add_relation += relation
-        session.run("".join([add_perfume, add_brand, add_platform, add_relation]))
+        res = session.run("MATCH n=()-[]->() delete n")
+        res = session.run("MATCH (n) delete n")
+        res = session.run("".join([add_perfume, add_brand, add_platform, add_relation]))
 
 

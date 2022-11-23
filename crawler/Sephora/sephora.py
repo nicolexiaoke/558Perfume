@@ -140,7 +140,7 @@ if __name__ == "__main__":
     }
 
     # base_url = "https://www.sephora.com/shop/perfume?currentPage={0}"
-    base_url = "https://www.sephora.com/brand/{0}?currentPage={1}"
+    base_url = "https://www.sephora.com/search?keyword={0}+perfume&currentPage={1}"
     brands = ["chanel", "dior","lancome","guerlain",
               "burberry","giorgio-armani-beauty",
               "gucci"]
