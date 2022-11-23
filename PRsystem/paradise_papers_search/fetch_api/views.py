@@ -11,6 +11,7 @@ from .utils import (
     fetch_ssnodes,
     fetch_sbnodes,
     fetch_spnodes,
+    fetch_lpnodes,
     fetch_node_details,
     fetch_perfume_names,
     fetch_perfume_sizes,
@@ -93,21 +94,9 @@ class GetLPNodesData(APIView):
             'limit': 10,
             'page': int(request.GET.get('p', 1)),
         }
-        nodes = fetch_nodes(fetch_info)
-        
-        def myFunc_rating(e):
-            return e['node_properties']['rating']
-        def myFunc_price(e):
-            return e['node_properties']['price']
-        
-        # if fetch_info['size'] == '':
-        #     print('size is null')
-        #     nodes.sort(key=myFunc_rating, reverse=True)
-        # else:
-        #     nodes.sort(key=myFunc_price, reverse=False)
-        nodes.sort(key=myFunc_price, reverse=False)
-        
-        print(nodes)
+        nodes = fetch_lpnodes(fetch_info)
+    
+        # print(nodes)
         data = {
             'response': {
                 'status': '200',
