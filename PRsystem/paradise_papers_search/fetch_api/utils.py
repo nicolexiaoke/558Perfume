@@ -208,10 +208,40 @@ def fetch_nodes(fetch_info):
     start           = ((fetch_info['page'] - 1) * limit)
     end             = start + limit
     node_set           = filter_nodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
-    fetched_nodes   = node_set[start:end]
+    fetched_nodes   = node_set
+    serialized_nodes = [node.serialize for node in fetched_nodes]
 
-    return [node.serialize for node in fetched_nodes]
+    def myFunc_rating(e):
+        return e['node_properties']['rating']
+    serialized_nodes.sort(key=myFunc_rating, reverse=True)
+
+    return serialized_nodes
     # return fetched_nodes
+
+def fetch_lpnodes(fetch_info):
+    node_type       = fetch_info['node_type']
+    search_word     = fetch_info['name']
+    size                 = fetch_info['size']
+    smell            = fetch_info['smell']
+    lprice             = fetch_info['lprice']
+    hprice             = fetch_info['hprice']
+    lrating             = fetch_info['lrating']
+    hrating             = fetch_info['hrating']
+    limit           = fetch_info['limit']
+    start           = ((fetch_info['page'] - 1) * limit)
+    end             = start + limit
+    node_set           = filter_nodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
+    fetched_nodes   = node_set
+    serialized_nodes = [node.serialize for node in fetched_nodes]
+
+    def myFunc_price(e):
+        return e['node_properties']['price']
+    
+    serialized_nodes.sort(key=myFunc_price, reverse=False)
+
+    print(len(serialized_nodes))
+    # print(serialized_nodes)
+    return serialized_nodes
 
 def fetch_ssnodes(fetch_info):
     node_type       = fetch_info['node_type']
@@ -226,7 +256,7 @@ def fetch_ssnodes(fetch_info):
     start           = ((fetch_info['page'] - 1) * limit)
     end             = start + limit
     node_set           = filter_ssnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
-    fetched_nodes   = node_set[start:end]
+    fetched_nodes   = node_set
 
     return [node.serialize for node in fetched_nodes]
 
@@ -244,7 +274,7 @@ def fetch_sbnodes(fetch_info):
     start           = ((fetch_info['page'] - 1) * limit)
     end             = start + limit
     node_set           = filter_sbnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
-    fetched_nodes   = node_set[start:end]
+    fetched_nodes   = node_set
 
     return [node.serialize for node in fetched_nodes]
 
@@ -261,7 +291,7 @@ def fetch_spnodes(fetch_info):
     start           = ((fetch_info['page'] - 1) * limit)
     end             = start + limit
     node_set           = filter_spnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
-    fetched_nodes   = node_set[start:end]
+    fetched_nodes   = node_set
 
     return [node.serialize for node in fetched_nodes]
 

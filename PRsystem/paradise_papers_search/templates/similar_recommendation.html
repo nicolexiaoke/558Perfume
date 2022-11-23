@@ -176,14 +176,15 @@
                 </table>
               </div>
               <div class="row">
-                <div class="col text-center load-more" data-bind="click: fetch">
+                <!-- <div class="col text-center load-more" data-bind="click: fetch"> -->
+                <div class="col text-center">
                   <div class="icon-div">
-                    <i data-bind="visible: !_fetchState()" class="fa fa-chevron-down fa-1x"></i>
+                    <!-- <i data-bind="visible: !_fetchState()" class="fa fa-chevron-down fa-1x"></i> -->
                     <i data-bind="visible: _fetchState" class="fa fa-circle-o-notch fa-spin fa-1x"></i>
                   </div>
                   <div>
                     <!-- ko ifnot: _fetchState -->
-                    Load More
+                    <!-- Load More -->
                     <!-- /ko -->
                     <!-- ko if: _fetchState -->
                     Loading Nodes

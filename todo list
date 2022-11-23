@@ -23,5 +23,13 @@ now:
     2) restrict the size √
 
 3. similar recommendation: (same/similar) scent, same brand, similar price
-    1) select perfume name and sizes
-    2)4 buttons: similar scents items, same brand items, similar price items, auto recommendation(overal score)
+    1) select perfume name and sizes √
+    2)4 buttons: similar scents items, same brand items, similar price items, √
+     auto recommendation(overal score) 
+
+
+
+entity linking:
+sameAs
+haveSimilarPrices
+haveSimilarScents

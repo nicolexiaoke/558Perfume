@@ -17,7 +17,7 @@ from .env import env
 #Connect to Neo4j Database
 # config.DATABASE_URL = env('DATABASE_URL')  # default
 # config.DATABASE_URL = 'bolt://neo4j:flames-throttle-cruiser@44.211.58.177:7687'
-config.DATABASE_URL = 'bolt://neo4j:perfumeKG@localhost:7687'
+config.DATABASE_URL = 'bolt://neo4j:Perfume_tmp@localhost:7687'
 
 # '''
 # connecting to auraDB
