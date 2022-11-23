@@ -1,3 +1,5 @@
 __pycache__
 .git/
 *env/
+data/entity_linking/samAs_predictions.csv
+data/entity_linking/predictions.csv
