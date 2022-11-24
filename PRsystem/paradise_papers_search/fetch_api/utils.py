@@ -62,7 +62,7 @@ def filter_ssnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0,
     '''
     pre_node_set = node_type.nodes
     if search_text != '':
-        pre_node_set.filter(name__icontains=search_text)
+        pre_node_set.filter(name__iexact=search_text)
     if size != '':
         pre_node_set.filter(size__icontains=size)
 
@@ -98,7 +98,7 @@ def filter_spnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0,
     '''
     pre_node_set = node_type.nodes
     if search_text != '':
-        pre_node_set.filter(name__icontains=search_text)
+        pre_node_set.filter(name__iexact=search_text)
     if size != '':
         pre_node_set.filter(size__icontains=size)
 
@@ -124,7 +124,7 @@ def filter_sbnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0,
     '''
     pre_node_set = node_type.nodes
     if search_text != '':
-        pre_node_set.filter(name__icontains=search_text)
+        pre_node_set.filter(name__iexact=search_text)
     if size != '':
         pre_node_set.filter(size__icontains=size)
 
@@ -304,10 +304,15 @@ def fetch_ssnodes(fetch_info):
     node_set           = filter_ssnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
     fetched_nodes   = node_set
     serialized_nodes = [node.serialize for node in fetched_nodes]
+    
+    seed_node = serialized_nodes[0]
+    serialized_nodes = serialized_nodes[1:]
 
     def myFunc_rating(e):
         return e['node_properties']['rating']
     serialized_nodes.sort(key=myFunc_rating, reverse=True)
+
+    serialized_nodes.insert(0, seed_node)
 
     return serialized_nodes
 
@@ -329,9 +334,15 @@ def fetch_sbnodes(fetch_info):
 
     serialized_nodes = [node.serialize for node in fetched_nodes]
 
+    seed_node = serialized_nodes[0]
+    serialized_nodes = serialized_nodes[1:]
+
     def myFunc_rating(e):
         return e['node_properties']['rating']
     serialized_nodes.sort(key=myFunc_rating, reverse=True)
+
+    
+    serialized_nodes.insert(0, seed_node)
 
     return serialized_nodes
 
@@ -352,9 +363,14 @@ def fetch_spnodes(fetch_info):
 
     serialized_nodes = [node.serialize for node in fetched_nodes]
 
+    seed_node = serialized_nodes[0]
+    serialized_nodes = serialized_nodes[1:]
+
     def myFunc_rating(e):
         return e['node_properties']['rating']
     serialized_nodes.sort(key=myFunc_rating, reverse=True)
+    
+    serialized_nodes.insert(0, seed_node)
 
     return serialized_nodes
 
