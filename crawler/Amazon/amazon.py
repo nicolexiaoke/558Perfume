@@ -83,10 +83,20 @@ class Amazon_Detail_Patch(PatchResult):
     def __init__(self, header: dict) -> None:
         super().__init__("https://www.amazon.com/", header)
 
-    def get_result(self, URL_pattern, **kwargs) -> Dict[str, str]:
-        r = rqs.get(URL_pattern, headers=self.header)
+    def get_result(self, URL:str, **kwargs)-> List[Dict[str, str]]:
+        r = rqs.get(URL, headers=self.header)
+        front = URL.split("/dp")[0]
+        node_t = etree.HTML(r.text)
+        sets = node_t.xpath("//li[contains(@id, 'size_name')][contains(@data-dp-url,'/')]/@data-dp-url")
+        response= [self.get_result_page(r, URL, **kwargs)] + \
+            [self.get_result_page(rqs.get(front+url, headers=self.header), front+url, **kwargs) for url in sets]
+        return response
+
+    def get_result_page(self, r, URL_pattern, **kwargs) -> Dict[str, str]:
+        sleep(0.5)
         if (r.status_code!=200):
             print(f"Error: {r.status_code}")
+
             return {}
         self.node = etree.HTML(r.text)
         title = self._get_joined_text("//*[@id='productTitle']/text()", "")
@@ -177,7 +187,7 @@ if __name__ == "__main__":
     for brand in ["chanel", "dior","lancome","guerlain",
               "burberry","giorgio-armani-beauty",
               "gucci"]:
-        href= tool.get_page_urls(search_pattern.format(brand, "{0}"), 4)
+        href= tool.get_page_urls(search_pattern.format(brand, "{0}"), 3)
         if href is not None:
             hrefs.extend(href)
 
@@ -187,5 +197,6 @@ if __name__ == "__main__":
         for item_url in hrefs:
             print(f"---> Processing item: {count}/{total}...")
             result = tool.get_result(item_url, max_len=3)
-            f.write(f"{result}\n")
+            for i in result:
+                f.write(f"{i}\n")
             count += 1
