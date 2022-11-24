@@ -8,3 +8,8 @@ data/entity_linking/haveSimilarScents_TRUE_predictions.csv
 data/entity_linking/samAs_TRUE_predictions.csv
 data/entity_linking/sameAs_predictions.csv
 data/entity_linking/sameAs_TRUE_predictions.csv
+data/entity_linking/allNodes2000.csv
+data/entity_linking/haveSimilarPrices_TRUE_predictions2000.csv
+data/entity_linking/haveSimilarScents_TRUE_predictions2000.csv
+data/entity_linking/sameAs_predictions2000.csv
+data/entity_linking/sameAs_TRUE_predictions2000.csv
