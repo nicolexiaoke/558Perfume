@@ -19,7 +19,7 @@ class Perfume(DjangoNode):
 
     name = StringProperty()
     size = StringProperty()
-    smell = StringProperty()
+    scent = StringProperty()
     price = FloatProperty()
     rating = FloatProperty()
     url = StringProperty()
@@ -49,7 +49,7 @@ class Perfume(DjangoNode):
                 'node_id': self.node_id,
                 'name': self.name,
                 'size': self.size,
-                'smell': self.smell,
+                'smell': self.scent,
                 'price': self.price,
                 'rating': self.rating,
                 'comments': self.comments,
