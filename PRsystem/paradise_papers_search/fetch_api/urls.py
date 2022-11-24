@@ -2,6 +2,9 @@ from django.conf.urls import url
 
 from .views import (
     GetNodesCount,
+    GetNodesSSCount,
+    GetNodesSPCount,
+    GetNodesSBCount,
     GetNodesData,
     GetNodeData,
     GetPerfumeNames,
@@ -15,6 +18,9 @@ from .views import (
 
 urlpatterns = [
     url(r'^count[/]?$', GetNodesCount.as_view(), name='get_nodes_count'),
+    url(r'^sscount[/]?$', GetNodesSSCount.as_view(), name='get_nodes_sscount'),
+    url(r'^spcount[/]?$', GetNodesSPCount.as_view(), name='get_nodes_spcount'),
+    url(r'^sbcount[/]?$', GetNodesSBCount.as_view(), name='get_nodes_sbcount'),
     url(r'^nodes[/]?$', GetNodesData.as_view(), name='get_nodes_data'),
     url(r'^lpnodes[/]?$', GetLPNodesData.as_view(), name='get_lpnodes_data'),
     url(r'^ssnodes[/]?$', GetSSNodesData.as_view(), name='get_ssnodes_data'),

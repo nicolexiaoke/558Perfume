@@ -7,6 +7,9 @@ from django.views import View
 
 from .utils import (
     count_nodes,
+    count_ssnodes,
+    count_sbnodes,
+    count_spnodes,
     fetch_nodes,
     fetch_ssnodes,
     fetch_sbnodes,
@@ -31,6 +34,69 @@ class GetNodesCount(APIView):
             'hrating': float(request.GET.get('nodehrating', 0)),
         }
         count = count_nodes(count_info)
+        data = {
+            'response': {
+                'status': '200',
+                'data': count,
+            },
+        }
+        return Response(data)
+
+class GetNodesSSCount(APIView):
+    def get(self, request):
+        count_info = {
+            'node_type': request.GET.get('nodetype', ''),
+            'name': request.GET.get('nodename', ''),
+            'size': request.GET.get('nodesize', ''),
+            'smell': request.GET.get('nodesmell', ''),
+            'lprice': float(request.GET.get('nodelprice', 0)),
+            'hprice': float(request.GET.get('nodehprice', 100000000)),
+            'lrating': float(request.GET.get('nodelrating', 5)),
+            'hrating': float(request.GET.get('nodehrating', 0)),
+        }
+        count = count_ssnodes(count_info)
+        data = {
+            'response': {
+                'status': '200',
+                'data': count,
+            },
+        }
+        return Response(data)
+
+class GetNodesSPCount(APIView):
+    def get(self, request):
+        count_info = {
+            'node_type': request.GET.get('nodetype', ''),
+            'name': request.GET.get('nodename', ''),
+            'size': request.GET.get('nodesize', ''),
+            'smell': request.GET.get('nodesmell', ''),
+            'lprice': float(request.GET.get('nodelprice', 0)),
+            'hprice': float(request.GET.get('nodehprice', 100000000)),
+            'lrating': float(request.GET.get('nodelrating', 5)),
+            'hrating': float(request.GET.get('nodehrating', 0)),
+        }
+        count = count_spnodes(count_info)
+        data = {
+            'response': {
+                'status': '200',
+                'data': count,
+            },
+        }
+        return Response(data)
+
+class GetNodesSBCount(APIView):
+    def get(self, request):
+        count_info = {
+            'node_type': request.GET.get('nodetype', ''),
+            'name': request.GET.get('nodename', ''),
+            'size': request.GET.get('nodesize', ''),
+            'smell': request.GET.get('nodesmell', ''),
+            'lprice': float(request.GET.get('nodelprice', 0)),
+            'hprice': float(request.GET.get('nodehprice', 100000000)),
+            'lrating': float(request.GET.get('nodelrating', 5)),
+            'hrating': float(request.GET.get('nodehrating', 0)),
+        }
+        count = count_sbnodes(count_info)
         data = {
             'response': {
                 'status': '200',
@@ -69,7 +135,7 @@ class GetNodesData(APIView):
         #     nodes.sort(key=myFunc_price, reverse=False)
         nodes.sort(key=myFunc_rating, reverse=True)
         
-        print(nodes)
+        # print(nodes)
         data = {
             'response': {
                 'status': '200',
@@ -122,7 +188,7 @@ class GetSSNodesData(APIView):
         }
 
         nodes = fetch_ssnodes(fetch_info)
-        print(nodes)
+        # print(nodes)
 
         data = {
             'response': {
@@ -149,7 +215,7 @@ class GetSPNodesData(APIView):
         }
 
         nodes = fetch_spnodes(fetch_info)
-        print(nodes)
+        # print(nodes)
 
         data = {
             'response': {
@@ -177,7 +243,7 @@ class GetSBNodesData(APIView):
         }
 
         nodes = fetch_sbnodes(fetch_info)
-        print(nodes)
+        # print(nodes)
 
         data = {
             'response': {

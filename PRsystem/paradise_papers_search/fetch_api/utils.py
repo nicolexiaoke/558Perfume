@@ -87,7 +87,7 @@ def filter_ssnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0,
     SSNODE = [node_type.inflate(n[0]) for n in node_set]
     SSNODE.insert(0, seednode)
     
-    print('\n\n in filter_ssnodes, noe_set:', SSNODE)
+    # print('\n\n in filter_ssnodes, noe_set:', SSNODE)
 
     return SSNODE
 
@@ -113,7 +113,7 @@ def filter_spnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0,
     SPNODE = [node_type.inflate(n[0]) for n in node_set]
     SPNODE.insert(0, seednode)
     
-    print('\n\n in filter_spnodes, noe_set:', SPNODE)
+    # print('\n\n in filter_spnodes, noe_set:', SPNODE)
 
     return SPNODE
 
@@ -132,9 +132,9 @@ def filter_sbnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0,
     
     seednode = pre_node_set[0]
     seedid = seednode.node_id
-    seedbrand = db.cypher_query("MATCH (:Perfume {node_id: '1'})\
+    seedbrand = db.cypher_query("MATCH (:Perfume {node_id: $seedid})\
                                 -[:productOf]-> (n)\
-                                return n.name")[0][0][0]
+                                return n.name", {'seedid': seedid})[0][0][0]
 
     print(seedbrand)
 
@@ -147,7 +147,8 @@ def filter_sbnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0,
     SSNODE = [node_type.inflate(n[0]) for n in node_set]
     SSNODE.insert(0, seednode)
     
-    print('\n\n in filter_ssnodes, noe_set:', SSNODE)
+    # print('\n\n in filter_ssnodes, noe_set:', SSNODE)
+    print('len(sbnodes):', len(SSNODE))
 
     return SSNODE
 '''
@@ -179,6 +180,51 @@ def count_nodes(count_info):
 
     return count
 
+def count_ssnodes(count_info):
+    count = {}
+    node_type               = count_info['node_type']
+    search_word             = count_info['name']
+    size                 = count_info['size']
+    smell            = count_info['smell']
+    lprice             = count_info['lprice']
+    hprice             = count_info['hprice']
+    lrating             = count_info['lrating']
+    hrating             = count_info['hrating']
+    node_set                = filter_ssnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
+    count['count']          = len(node_set)
+
+    return count
+
+def count_spnodes(count_info):
+    count = {}
+    node_type               = count_info['node_type']
+    search_word             = count_info['name']
+    size                 = count_info['size']
+    smell            = count_info['smell']
+    lprice             = count_info['lprice']
+    hprice             = count_info['hprice']
+    lrating             = count_info['lrating']
+    hrating             = count_info['hrating']
+    node_set                = filter_spnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
+    count['count']          = len(node_set)
+
+    return count
+
+def count_sbnodes(count_info):
+    count = {}
+    node_type               = count_info['node_type']
+    search_word             = count_info['name']
+    size                 = count_info['size']
+    smell            = count_info['smell']
+    lprice             = count_info['lprice']
+    hprice             = count_info['hprice']
+    lrating             = count_info['lrating']
+    hrating             = count_info['hrating']
+    node_set                = filter_sbnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
+    count['count']          = len(node_set)
+
+    print('len(sbnodes):', count)
+    return count
 
 '''
 fetch_info:
@@ -257,8 +303,13 @@ def fetch_ssnodes(fetch_info):
     end             = start + limit
     node_set           = filter_ssnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
     fetched_nodes   = node_set
+    serialized_nodes = [node.serialize for node in fetched_nodes]
 
-    return [node.serialize for node in fetched_nodes]
+    def myFunc_rating(e):
+        return e['node_properties']['rating']
+    serialized_nodes.sort(key=myFunc_rating, reverse=True)
+
+    return serialized_nodes
 
 
 def fetch_sbnodes(fetch_info):
@@ -276,7 +327,13 @@ def fetch_sbnodes(fetch_info):
     node_set           = filter_sbnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
     fetched_nodes   = node_set
 
-    return [node.serialize for node in fetched_nodes]
+    serialized_nodes = [node.serialize for node in fetched_nodes]
+
+    def myFunc_rating(e):
+        return e['node_properties']['rating']
+    serialized_nodes.sort(key=myFunc_rating, reverse=True)
+
+    return serialized_nodes
 
 def fetch_spnodes(fetch_info):
     node_type       = fetch_info['node_type']
@@ -293,7 +350,13 @@ def fetch_spnodes(fetch_info):
     node_set           = filter_spnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
     fetched_nodes   = node_set
 
-    return [node.serialize for node in fetched_nodes]
+    serialized_nodes = [node.serialize for node in fetched_nodes]
+
+    def myFunc_rating(e):
+        return e['node_properties']['rating']
+    serialized_nodes.sort(key=myFunc_rating, reverse=True)
+
+    return serialized_nodes
 
 '''
 node_info:

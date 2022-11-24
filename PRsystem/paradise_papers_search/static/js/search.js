@@ -33,7 +33,8 @@
       'size': ['size', true],
       'price': ['price', true],
       'rating': ['rating', true],
-      'url': ['url', true]
+      'smell': ['scent', true],
+      'url': ['url', false]
     }
   };
 
@@ -330,6 +331,54 @@
       })
     }
 
+    ssfetchCount() {
+      console.log('in ssfetchCount')
+      console.log(this._search_filters)
+      $.getJSON(
+        this._search_api + 'sscount',
+        this._search_filters
+      )
+      .done(nodes => {
+        this._nodeSearchDataCount(nodes.response.data.count)
+      })
+      .fail(() => {
+        /** @todo Handle errors */
+        console.log("Fetch error");
+      })
+    }
+
+    spfetchCount() {
+      console.log('in spfetchCount')
+      console.log(this._search_filters)
+      $.getJSON(
+        this._search_api + 'spcount',
+        this._search_filters
+      )
+      .done(nodes => {
+        this._nodeSearchDataCount(nodes.response.data.count)
+      })
+      .fail(() => {
+        /** @todo Handle errors */
+        console.log("Fetch error");
+      })
+    }
+
+    sbfetchCount() {
+      console.log('in sbfetchCount')
+      console.log(this._search_filters)
+      $.getJSON(
+        this._search_api + 'sbcount',
+        this._search_filters
+      )
+      .done(nodes => {
+        this._nodeSearchDataCount(nodes.response.data.count)
+      })
+      .fail(() => {
+        /** @todo Handle errors */
+        console.log("Fetch error");
+      })
+    }
+
     /**
      * Clear and reset 
      */
@@ -395,6 +444,7 @@
       console.log("into initNodeSearch")
       console.log('inLowestPriceState:', this._inLowestPriceState());
       console.log('inSimilarScentState:', this._inSimilarScentState());
+      console.log('_inSameBrandState:', this._inSameBrandState());
 
       this._nodeSearchList().forEach(nodeSearch => {
         
@@ -407,8 +457,16 @@
           'nodename': this._filters['perfume_names'],
           'nodesize': this._filters['perfume_sizes'],
         });
-
-        nodeSearch.fetchCount();
+        if(this._inSimilarScentState()){
+          nodeSearch.ssfetchCount();
+        }else if (this._inSimilarPriceState()){
+          nodeSearch.spfetchCount();
+        }else if (this._inSameBrandState()){
+          nodeSearch.sbfetchCount();
+        }else{
+          nodeSearch.fetchCount();
+        }
+        
       });
       console.log("outof nodesearchlist")
 
