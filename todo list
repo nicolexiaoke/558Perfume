@@ -29,7 +29,21 @@ now:
 
 
 
-entity linking:
+4. entity linking: √
 sameAs
 haveSimilarPrices
 haveSimilarScents
+
+
+5. in random and best price pages, change the logic of finding same product by using sameAs relation.
+6. in similar page: list all sizes of a perfume with sameAs relation as the selected name
+7. in lowest price recomendation: add size as a filter condition
+8. in lp page: delete size
+
+
+
+structure data: use in name entity-linking evaluation(ziquan)
+
+analysis problem(xiaoke)
+
+auto -- save for later
