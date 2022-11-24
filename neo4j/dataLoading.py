@@ -57,8 +57,8 @@ def sephora_process(record: Dict[str, str]):
     # print(record)
     record["name"] = record["name"].split("Eau")[0].strip()
     record["brand"] = record["brand"].strip().lower()
-    size = re.search("[0-9]+.*[0-9]*.*(oz|ml)", record["size"],re.I)
-    record["size"] = size.group().lower() if size else EMPTY_STRING
+    # size = re.search("[0-9]+.*[0-9]*.*(oz|ml)", record["size"],re.I)
+    # record["size"] = size.group().lower() if size else EMPTY_STRING
     rating = re.search("[0-9]+\.*[0-9]*" ,record['rating'])
     record["ratings"] = rating.group() if rating else EMPTY_RATING_FLOAT
     price = re.search("[0-9]+\.*[0-9]*", record["price"])
@@ -78,14 +78,9 @@ def amazon_process(record: Dict[str, str]):
     brand = re.search("keywords\=perfume\+[a-z\-\_]+\&" ,url, re.I)
     if (brand):
         record["brand"] = brand.group().split("+")[-1][:-1].strip().lower()
-    title_size = re.search("[0-9]+\.*[0-9]*.*(oz|ml)", name[-1], re.I)
+    title_size = re.search("[0-9]+\.*[0-9]*[^a-zA-Z]*(oz|ml)", name[-1], re.I)
     if (not record["size"] and title_size):
         record["size"] = title_size.group().lower()
-    elif (record["size"]):
-        size = re.search("[0-9]+\.*[0-9]*", record["size"],re.I)
-        record["size"] = None if not size else size.group()+" ml" if float(size.group())>10 else size.group()+" oz"
-    else:
-        record["size"] = EMPTY_STRING
 
     ratings = re.search("[0-9]+\.*[0-9]*" ,record["ratings"]["Overall"][0])
     record["ratings"] = ratings.group() if ratings else EMPTY_RATING_FLOAT
@@ -102,9 +97,11 @@ def amazon_process(record: Dict[str, str]):
 def fragranceNet_process(record: Dict[str, str]):
     path_like = os.path.dirname(record["url"])
     path_like = os.path.split(path_like)
-    record["name"] = path_like[1]
+    record["name"] = path_like[1].replace("_", " ").replace("-", ' ')
     record["brand"] = os.path.split(path_like[0])[1]
-    record["size"] = record["size"].strip().lower() if record["size"] else EMPTY_STRING
+    if record["size"]:
+        size = re.search("[0-9]+\.*[0-9]* (oz|ml)",record["size"])
+        record["size"] =  size.group() if size else EMPTY_STRING
     if not record["scent"]:
         record["scent"] = EMPTY_STRING
     if not record["ratings"]:
@@ -116,6 +113,32 @@ def fragranceNet_process(record: Dict[str, str]):
     record["comments"] = comments
     # print(record)
     return record
+
+def size_converter(size: str) -> str:
+    if (not size or size==EMPTY_STRING): return EMPTY_STRING
+    change = {"Cubic": 0.554113, "(Milli|ml)": 0.0338140499119871,
+              "Centi":3.381404991198710195, "(Ounce|oz)": 1}
+
+    numeric = re.search("[0-9]+\.*[0-9]*", size)
+    if (not numeric):
+        return EMPTY_STRING
+    num_size = float(numeric.group())
+    unit = size[numeric.end():].strip()
+
+    for key, item in change.items():
+        if re.search(key,unit, re.I):
+            if key=="(Milli|ml)" and item<10:
+                return f"{item:.1f} oz"
+            if key=="(Ounce|oz)" and item>100:
+                return f"{item*0.033814:.1f} oz"
+            return f"{num_size*item:.1f} oz"
+
+    if (num_size<10):
+        return f"{num_size:.1f} oz"
+    elif (num_size>=100 or not num_size%10):
+        return f"{num_size*0.033814:.1f} oz"
+    else:
+        return f"{num_size*0.55413:.1f} oz"
 
 def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
     global perfume_id, brand_id, all_brands;
@@ -139,14 +162,17 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->None:
     for record in data:
         # processing data
         if not len(record): continue
+
         record: Dict[str, str] = plt_info["func"](record)
         record["rating"] = record["ratings"]
-        record["name"] = re.sub("[\x01-\x19\x7b-\x7f\'\"]",'', record["name"])
+        record["name"] = re.sub("[\x01-\x19\x7b-\x7f\'\"]",'', record["name"]).strip("(-_<>)^$. \t").capitalize()
         if record["brand"]:
-            record["brand"] = record["brand"].lower()
+            record["brand"] = re.sub("[-_]", " ",record["brand"]).capitalize()
             _brand_name[record['name']] = record["brand"]
         else:
             record["brand"] = _brand_name[record['name']] if record['name'] in _brand_name else EMPTY_STRING
+
+        record["size"] = size_converter(record["size"])
 
         if reduce(lambda x,y: x or y, map(lambda x: re.search(x, record["name"], re.I),
                                         ["Mascara", "Lip", "Conceal", "Lash", 'primer']), False):
@@ -191,9 +217,9 @@ if __name__ == "__main__":
     sys.path.append(os.getcwd())
     import crawler.modules.jsonl as jsonl
 
-    uri = "bolt://localhost:11003"
+    uri = "bolt://localhost:7687"
     user = "neo4j"
-    password = "Perfume_tmp"
+    password = "perfumeKG"
 
     platform_infos = [
         {"name":"Amazon", "id": '0', "store": 'no', "data": "./data/amazon.jsonl", "func": amazon_process},
