@@ -182,7 +182,7 @@ if __name__ == "__main__":
     sys.path.append(os.getcwd())
     import crawler.modules.jsonl as jsonl
 
-    uri = "bolt://localhost:7687"
+    uri = "bolt://localhost:11003"
     user = "neo4j"
     password = "Perfume_tmp"
 
