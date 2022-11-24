@@ -3,3 +3,6 @@ __pycache__
 *env/
 data/entity_linking/samAs_predictions.csv
 data/entity_linking/predictions.csv
+data/entity_linking/haveSimilarPrices_TRUE_predictions.csv
+data/entity_linking/haveSimilarScents_TRUE_predictions.csv
+data/entity_linking/samAs_TRUE_predictions.csv
