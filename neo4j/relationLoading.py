@@ -32,8 +32,7 @@ class App:
         for i in range(rel_num):
             node_id1 = source_df.at[i ,'node_id1']
             node_id2 = source_df.at[i, 'node_id2']
-            if i % 100 == 0:
-                print('i: ', node_id1, node_id2)
+
             query = (
                 "MATCH\
                         (a:Perfume),\
@@ -43,8 +42,11 @@ class App:
                     RETURN type(r)"\
             )
             result = tx.run(query, node_id1=node_id1, node_id2=node_id2)
-            # for row in result:
-            #     print(row)
+
+            if i % 1000 == 0:
+                print(i,'/',rel_num, ': ', node_id1, node_id2)
+                for row in result:
+                    print(row)
             # break
 
 
