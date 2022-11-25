@@ -46,3 +46,9 @@
 .clickable-header thead th {
   cursor: pointer;
 }
+
+
+.header{
+    position:sticky;
+    top: 0 ;
+}
