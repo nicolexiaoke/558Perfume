@@ -70,7 +70,7 @@ def commit_ent_rel(tx, data: List[List[Union[str, float]]]):
         line2 = ", ".join(map(lambda x: f'{x}:"{record[x]}"', string))
         line3 = ", ".join(map(lambda x: f'{x}: {record[x]}', nonstr))
         add_ent = line.format(structured_id, "{"+
-            ", ".join([f"node_id: 'n{structured_id}'",line2,line3])+"}")
+            ", ".join([f"node_id: 's{structured_id}'",line2,line3])+"}")
 
         # Got new brand ent & rel
         if (flag):
@@ -83,10 +83,10 @@ def commit_ent_rel(tx, data: List[List[Union[str, float]]]):
         else:
             tx.run(add_ent)
             add_rel = (
-                    f"MATCH (a:Perfume), (b:Brand)\
-                        WHERE a.node_id = 's{structured_id}'\
-                            AND b.node_id = '{all_brands[brand]}'\
-                        CREATE (a)-[r:productOf]->(b) "
+                     "MATCH (a:Perfume), (b:Brand) "
+                    f"WHERE a.node_id = 's{structured_id}' "
+                    f"AND b.node_id = '{all_brands[brand]}' "
+                     "CREATE (a)-[r:productOf]->(b) "
             )
             tx.run(add_rel)
         structured_id += 1
