@@ -13,3 +13,8 @@ data/entity_linking/haveSimilarPrices_TRUE_predictions2000.csv
 data/entity_linking/haveSimilarScents_TRUE_predictions2000.csv
 data/entity_linking/sameAs_predictions2000.csv
 data/entity_linking/sameAs_TRUE_predictions2000.csv
+data/entity_linking/sameAs_TRUE_predictions_jaro_0.6.csv
+data/entity_linking/sameAs_TRUE_predictions_jaro_0.8.csv
+data/entity_linking/sameAs_TRUE_predictions_jaro_jaccard_0.5.csv
+data/entity_linking/sameAs_TRUE_predictions_needleman_0.8.csv
+data/rltk-experimentation-master.zip
