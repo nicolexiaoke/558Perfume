@@ -550,7 +550,12 @@
      */
     displayNode (node) {
       const url = node._node_properties.url;
-      window.open(url);
+      if(url != 'NULL'){
+        window.open(url);
+      }else{
+        alert("from structured data, no outer webpage!");
+      }
+      
 
 
       // const node_id = node._node_id;
