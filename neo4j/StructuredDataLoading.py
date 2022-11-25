@@ -11,7 +11,6 @@ EMPTY_STRING = 'NULL'
 EMPTY_RATING_FLOAT = 0
 EMPTY_PRICING_FLOAT = ~(-1 ^ (1<<31))
 
-
 ##     nonstr = ['price', 'rating', 'comments']
 ##     string = ['name', 'size', 'scent', 'brand', 'url']
 ## Ent: Brand
@@ -24,7 +23,7 @@ structured_id = 1
 def find_brand(name, brand):
     global all_brands, brand_id;
     # 原 brand
-    if (brand == '' or not brand): said_brand = "Unknown"
+    if (not brand or re.match("na", brand.strip(), re.I) or brand==''): said_brand = None
     else: said_brand = brand.strip()
     # 预测brand
     pred_brand = None
@@ -34,11 +33,14 @@ def find_brand(name, brand):
 
     if (pred_brand):
         return False,pred_brand
-    else:
+    elif said_brand:
         all_brands[said_brand] = f"b{brand_id}";
         brand_id+=1;
         return True,said_brand;
-
+    else:
+        all_brands["Unknown"] = f"b{brand_id}"
+        brand_id+=1
+        return True, "Unknown"
 
 def preprocessing(record: List[Union[str,float]]) -> Dict[str, Union[str, float]]:
     mapping = {}
@@ -46,12 +48,12 @@ def preprocessing(record: List[Union[str,float]]) -> Dict[str, Union[str, float]
     mapping['brand'] = record[2].strip().replace("-"," ").capitalize() \
                     if isinstance(record[2], str) else ''
     oz_size = CrawlingDataLoading.size_converter(record[3], 1, "ml")
-    mapping["size"] = f"{oz_size} oz" \
+    mapping["size"] = f"{oz_size:.1f} oz" \
                         if oz_size else EMPTY_STRING
     mapping["scent"] = EMPTY_STRING
     mapping["url"] = EMPTY_STRING
-    mapping["price"] = float(record[7].replace(",","")) \
-                        if isinstance(record[7], str) else record[7]
+    mapping["price"] = round((float(record[7].replace(",","")) \
+                if isinstance(record[7], str) else record[7])/3.75, 2)
     mapping["rating"] = EMPTY_RATING_FLOAT
     mapping["comments"] = []
     return mapping
@@ -63,7 +65,7 @@ def commit_ent_rel(tx, data: List[List[Union[str, float]]]):
     for raw_rec in data:
         record = preprocessing(raw_rec)
         flag, brand = find_brand(record["name"], record["brand"])
-        record["brand"] = brand if brand else EMPTY_STRING
+        record["brand"] = brand if brand else 'Unknown'
 
         # Add Perfume Entity
         line = " CREATE (s{0}:Perfume {1}) "
@@ -92,7 +94,6 @@ def commit_ent_rel(tx, data: List[List[Union[str, float]]]):
         structured_id += 1
 
     return None
-
 
 if __name__ == "__main__":
     import pandas as pd
