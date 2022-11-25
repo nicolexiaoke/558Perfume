@@ -106,9 +106,9 @@ if __name__ == "__main__":
     data = df.values.tolist()
 
     # 获取原数据
-    uri = "bolt://localhost:7687"
+    uri = "bolt://localhost:11003"
     user = "neo4j"
-    password = "perfumeKG"
+    password = "Perfume_tmp"
 
     driver = GraphDatabase.driver(uri, auth=(user, password))
     with driver.session(database="neo4j") as session:

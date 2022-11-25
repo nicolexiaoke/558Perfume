@@ -16,10 +16,10 @@ class App:
         with self.driver.session(database="neo4j") as session:
             sameAs_result = session.execute_write(
                 self._add_relation, sameAs_sourcefile, 'sameAs')
-            haveSimilarPrices_result = session.execute_write(
-                self._add_relation, haveSimilarPrices_sourcefile, 'haveSimilarPrices')
-            haveSimilarScents_result = session.execute_write(
-                self._add_relation, haveSimilarScents_sourcefile, 'haveSimilarScents')
+            # haveSimilarPrices_result = session.execute_write(
+            #     self._add_relation, haveSimilarPrices_sourcefile, 'haveSimilarPrices')
+            # haveSimilarScents_result = session.execute_write(
+            #     self._add_relation, haveSimilarScents_sourcefile, 'haveSimilarScents')
 
 
     @staticmethod
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     password = "Perfume_tmp"
     app = App(uri, user, password)
     dir = '../data/entity_linking/'
-    sameAs_sourcefile = dir+'sameAs_TRUE_predictions.csv'
+    sameAs_sourcefile = dir+'sameAs_TRUE_predictions_jaro_jaccard_0.5.csv'
     haveSimilarPrices_sourcefile = dir+'haveSimilarPrices_TRUE_predictions.csv'
     haveSimilarScents_sourcefile = dir+'haveSimilarScents_TRUE_predictions.csv'
     app.add_relations(sameAs_sourcefile, haveSimilarPrices_sourcefile, haveSimilarScents_sourcefile)

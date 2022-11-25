@@ -230,9 +230,9 @@ if __name__ == "__main__":
     sys.path.append(os.path.split(file_path)[0])
     import crawler.modules.jsonl as jsonl
 
-    uri = "bolt://localhost:7687"
+    uri = "bolt://localhost:11003"
     user = "neo4j"
-    password = "perfumeKG"
+    password = "Perfume_tmp"
 
     platform_infos = [
         {"name":"Amazon", "id": '0', "store": 'no', "data": "../data/amazon.jsonl", "func": amazon_process},
