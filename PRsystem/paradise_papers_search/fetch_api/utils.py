@@ -283,8 +283,10 @@ def beautify_frontend_display(serialized_nodes):
             serialized_nodes[i]['node_properties']['smell'] = '-'
         if serialized_nodes[i]['node_properties']['rating'] == 0:
             serialized_nodes[i]['node_properties']['rating'] = '-'
-        if serialized_nodes[i]['node_properties']['price'] == ~(-1 ^ (1<<31)):
-            serialized_nodes[i]['node_properties']['rating'] = '-'
+        if serialized_nodes[i]['node_properties']['price'] == 2147483648:
+            serialized_nodes[i]['node_properties']['price'] = '-'
+        if serialized_nodes[i]['node_properties']['size'] == 'NULL':
+            serialized_nodes[i]['node_properties']['size'] = '-'
 
 
 def fetch_nodes(fetch_info):
