@@ -14,7 +14,6 @@ class SellingPlatform(StructuredNode, NodeUtils):
     has_offline_store = StringProperty()
     
     listedOn  = RelationshipFrom('.perfume.Perfume', 'listedOn')
-    provideDelivery = RelationshipTo('.delivery_option.DeliveryOption', 'provideDelivery')
     
 
     @property
@@ -33,9 +32,5 @@ class SellingPlatform(StructuredNode, NodeUtils):
             {
                 'nodes_type': 'Perfume',
                 'nodes_related': self.serialize_relationships(self.listedOn.all()),
-            },
-            {
-                'nodes_type': 'DeliveryOption',
-                'nodes_related': self.serialize_relationships(self.provideDelivery.all()),
             },
     ]

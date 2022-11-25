@@ -5,16 +5,14 @@ from neomodel import db
 from .models import (
     Perfume,
     Brand,
-    SellingPlatform,
-    DeliveryOption
+    SellingPlatform
 )
 
 # For easily access each of the model classes programmatically, create a key-value map.
 MODEL_ENTITIES = {
     'Perfume': Perfume,
     'Brand': Brand,
-    'SellingPlatform': SellingPlatform,
-    'DeliveryOption': DeliveryOption
+    'SellingPlatform': SellingPlatform
 }
 
 
@@ -34,12 +32,10 @@ def filter_nodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, h
 
     # On DeliveryOption nodes we want to check the search_text against the description property
     # For any other we check against the name property
-    if node_type.__name__ == 'DeliveryOption':
-        node_set.filter(description__icontains=search_text)
-    else:
-        node_set.filter(name__icontains=search_text)
-        if size != '':
-            node_set.filter(size__icontains=size)
+    
+    node_set.filter(name__icontains=search_text)
+    if size != '':
+        node_set.filter(size__icontains=size)
 
     # Only Perfume store size, smell, price, rating info
     # if node_type.__name__ == 'Perfume':

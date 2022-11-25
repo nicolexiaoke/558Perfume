@@ -33,7 +33,6 @@ class Perfume(DjangoNode):
     haveSimilarScents = RelationshipTo('.perfume.Perfume', 'haveSimilarScents')
 
 
-    deliverBy = RelationshipTo('.delivery_option.DeliveryOption', 'deliverBy')
     listedOn = RelationshipTo('.selling_platform.SellingPlatform', 'listedOn')
     productOf = RelationshipTo('.brand.Brand', 'productOf')
 
@@ -83,10 +82,6 @@ class Perfume(DjangoNode):
             {
                 'nodes_type': 'Perfume',
                 'nodes_related': self.serialize_relationships(self.haveSimilarScents.all()),
-            },
-            {
-                'nodes_type': 'DeliveryOption',
-                'nodes_related': self.serialize_relationships(self.deliverBy.all()),
             },
             {
                 'nodes_type': 'SellingPlatform',
