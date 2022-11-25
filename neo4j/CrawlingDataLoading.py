@@ -33,7 +33,7 @@ perfume_id = brand_id = 1
 all_brands = {}
 EMPTY_STRING = 'NULL'
 EMPTY_RATING_FLOAT = 0
-EMPTY_PRICING_FLOAT = ~(-1 ^ (1<<31))
+EMPTY_PRICING_FLOAT = ~(-1 ^ (1<<0x1f))
 
 
 def hexstring_to_normal(string: str):
@@ -133,10 +133,10 @@ def size_converter(size: str, is_numeric:bool = False, unit:str = "") -> float:
 
     for key, item in change.items():
         if re.search(key,unit, re.I):
-            if key=="(Milli|ml)" and item<10:
-                return item
-            if key=="(Ounce|oz)" and item>100:
-                return item*0.033814
+            if key=="(Milli|ml)" and num_size<10:
+                return num_size
+            if key=="(Ounce|oz)" and num_size>100:
+                return num_size*0.033814
             return num_size*item
 
     if (num_size<10):
@@ -171,7 +171,7 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->List[str]:
 
         record: Dict[str, str] = plt_info["func"](record)
         record["rating"] = record["ratings"]
-        record["name"] = re.sub("[\x01-\x19\x7b-\x7f\'\"]",'', record["name"]).strip("(-_<>)^$. \t").capitalize()
+        record["name"] = re.sub("[\x01-\x19\x7b-\x7f\'\",]",'', record["name"]).strip("(-_<>)^$. \t").capitalize()
         if record["brand"]:
             record["brand"] = re.sub("[-_]", " ",record["brand"]).capitalize()
             _brand_name[record['name']] = record["brand"]

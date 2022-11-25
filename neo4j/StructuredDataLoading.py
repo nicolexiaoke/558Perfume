@@ -23,7 +23,7 @@ structured_id = 1
 def find_brand(name, brand):
     global all_brands, brand_id;
     # 原 brand
-    if (brand == '' or not brand): said_brand = "Unknown"
+    if (not brand or re.match("na", brand.strip(), re.I) or brand==''): said_brand = None
     else: said_brand = brand.strip()
     # 预测brand
     pred_brand = None
@@ -33,10 +33,14 @@ def find_brand(name, brand):
 
     if (pred_brand):
         return False,pred_brand
-    else:
+    elif said_brand:
         all_brands[said_brand] = f"b{brand_id}";
         brand_id+=1;
         return True,said_brand;
+    else:
+        all_brands["Unknown"] = f"b{brand_id}"
+        brand_id+=1
+        return True, "Unknown"
 
 def preprocessing(record: List[Union[str,float]]) -> Dict[str, Union[str, float]]:
     mapping = {}
@@ -61,7 +65,7 @@ def commit_ent_rel(tx, data: List[List[Union[str, float]]]):
     for raw_rec in data:
         record = preprocessing(raw_rec)
         flag, brand = find_brand(record["name"], record["brand"])
-        record["brand"] = brand if brand else EMPTY_STRING
+        record["brand"] = brand if brand else 'Unknown'
 
         # Add Perfume Entity
         line = " CREATE (s{0}:Perfume {1}) "
