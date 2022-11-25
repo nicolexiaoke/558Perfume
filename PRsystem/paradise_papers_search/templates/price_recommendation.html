@@ -9,7 +9,7 @@
           <h1 class="display-3 mb-5">Lowest Price Recommendation </h1>
           <form class="search-form" data-bind="submit: () => $('#init-search').click()">
             <div class="form-group row">
-              <div class="input-group mb-3 col-md-12" data-bind="submit: () => $('#init-search').click()">
+              <div class="input-group mb-3 col-md-12">
                 <div class="input-group-prepend">
                   <span class="input-group-text">Perfume names</span>
                 </div>
@@ -18,10 +18,10 @@
                              optionsCaption: 'All...',
                              value: _filters.perfume_names">  <!-- the value of the list comes from the filter of jurisdiction -->
                 </select>
-                <div class="col-auto mt-auto">
+                <!-- <div class="col-auto mt-auto">
                   <a class="btn btn-primary text-white"  type="submit" data-bind="click: fetchPerfumeSizes
                                                         value: _filters.perfume_names" >click to filter sizes</a>
-                </div>
+                </div> -->
               </div>
               
               <!-- <div class="input-group mb-3 col-md-6">
@@ -34,7 +34,7 @@
                              value: _filters.country">
                 </select>
               </div> -->
-              <div class="input-group mb-3 col-md-12" >
+              <!-- <div class="input-group mb-3 col-md-12" >
                 <div class="input-group-prepend">
                   <span class="input-group-text">Perfume sizes</span>
                 </div>
@@ -46,12 +46,34 @@
                  <a id="init-search" href="#search-results" class="btn btn-link col-md-1" data-bind="click: function() { setLowestPriceState(); initNodeSeach() }  ">
                 <i class="fa fa-search fa-x "></i>
                 </a>
-              </div>
 
+              </div> -->
+              <div class="col">
+                <label for="search-input" class="search-label form-text text-muted text-left">select a perfume to see how its ratings and prices differ from different vendors:</label>
+              </div>
             </div> <!-- End Filters -->
 
-            <!-- <div class="form-row">
-              <div class="form-group col-12">
+            <div class="form-row ">
+              <div class="col">
+              </div>
+            </div>
+            <div class="form-row ">
+              <div class="col">
+              </div>
+            </div>
+            <div class="form-row ">
+              <div class="col">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-md-6 mt-auto">
+                <a class="btn btn-primary text-white"  id="init-search" href="#search-results" data-bind="click: initNodeSeach">highest rating products</a>
+              </div>
+              <div class="col-md-6 mt-auto">
+                <a class="btn btn-primary text-white"  id="init-search" href="#search-results" data-bind="click: function() { setLowestPriceState(); initNodeSeach() }" >lowest price vendors</a>
+              </div>
+              <!-- <div class="form-group col-12">
                 <div class="row">
                   <div class="col">
                     <input type="text" class="w-100 form-control-xs-lg search-input" id="search-input" name="q" placeholder="Search..." value="" data-bind="value: _searchText">
@@ -72,8 +94,8 @@
                   <div class="col-auto mb-auto">
                   </div>
                 </div>
-              </div>
-            </div> -->
+              </div> -->
+            </div>
           </form>
         </div>
       </div>

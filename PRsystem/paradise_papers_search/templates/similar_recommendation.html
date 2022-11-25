@@ -9,7 +9,7 @@
           <h1 class="display-3 mb-5">Similar Item Recommendation </h1>
           <form class="search-form" data-bind="submit: () => $('#init-search').click()">
             <div class="form-group row">
-              <div class="input-group mb-3 col-md-12 " data-bind="submit: () => $('#init-search').click()">
+              <div class="input-group mb-3 col-md-12">
                 <div class="input-group-prepend">
                   <span class="input-group-text">Perfume names</span>
                 </div>
@@ -47,28 +47,27 @@
                 <i class="fa fa-search fa-x "></i>
                 </a> -->
               </div>
-
-            </div> <!-- End Filters -->
-
-            <div class="form-row ">
               <div class="col">
                 <label for="search-input" class="search-label form-text text-muted text-left">I want to browse...</label>
               </div>
+            </div> <!-- End Filters -->
+
+            <div class="form-row ">
             </div>
 
             <div class="form-row">
-              <div class="col-3 mt-auto">
-                <a class="btn btn-secondary text-white"  id="init-search" href="#search-results" data-bind="click: function() { setSimilarScentState(); initNodeSeach() }">similar scents items</a>
+              <div class="col-4 mt-auto">
+                <a class="btn btn-info text-white"  id="init-search" href="#search-results" data-bind="click: function() { setSimilarScentState(); initNodeSeach() }">similar scents items</a>
               </div>
-              <div class="col-3 mt-auto">
-                <a class="btn btn-secondary text-white"  id="init-search" href="#search-results" data-bind="click: function() { setSameBrandState(); initNodeSeach() }" >same brand items</a>
+              <div class="col-4 mt-auto">
+                <a class="btn btn-info text-white"  id="init-search" href="#search-results" data-bind="click: function() { setSameBrandState(); initNodeSeach() }" >same brand items</a>
               </div>
-              <div class="col-3 mt-auto">
-                <a class="btn btn-secondary text-white"  id="init-search" href="#search-results" data-bind="click: function() { setSimilarPriceState(); initNodeSeach() }" >similar price items</a>
+              <div class="col-4 mt-auto">
+                <a class="btn btn-info text-white"  id="init-search" href="#search-results" data-bind="click: function() { setSimilarPriceState(); initNodeSeach() }" >similar price items</a>
               </div>
-              <div class="col-3 mt-auto">
+              <!-- <div class="col-3 mt-auto">
                 <a class="btn btn-info text-white"  id="init-search" href="#search-results"  >see auto recommendation</a>
-              </div>
+              </div> -->
 
 
 

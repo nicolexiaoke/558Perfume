@@ -28,28 +28,42 @@ def filter_nodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, h
     print('invoked by displayNodeSearch()')
     print('node_type:', node_type)
     print('search_text:', search_text)
-    node_set = node_type.nodes
+    pre_node_set = node_type.nodes
 
     # On DeliveryOption nodes we want to check the search_text against the description property
     # For any other we check against the name property
     
-    node_set.filter(name__icontains=search_text)
-    if size != '':
-        node_set.filter(size__icontains=size)
+    pre_node_set.filter(name__iexact=search_text)
 
-    # Only Perfume store size, smell, price, rating info
-    # if node_type.__name__ == 'Perfume':
-    #     node_set.filter(size__icontains=size)
-    #     node_set.filter(smell__icontains=smell)
-    #     node_set.filter(price__gte=lprice)
-    #     node_set.filter(rating__gte=lrating)
-    #     node_set.filter(price__lte=hprice)
-    #     node_set.filter(rating__lte=lrating)
+    seednode = pre_node_set[0]
 
-    # # print(node_set[0])
-    # print(node_set[1])
+    seedid = seednode.node_id
+    node_set =  db.cypher_query("MATCH (:Perfume {node_id: $seedid})\
+         -[:sameAs]-> (n)\
+        RETURN DISTINCT n",\
+            {'seedid': seedid}
+        )[0]
+    
+    SANODE = [node_type.inflate(n[0]) for n in node_set]
+    SANODE.insert(0, seednode)
+    
+    # print('\n\n in filter_ssnodes, noe_set:', SSNODE)
 
-    return node_set
+    return SANODE
+
+    # # Only Perfume store size, smell, price, rating info
+    # # if node_type.__name__ == 'Perfume':
+    # #     node_set.filter(size__icontains=size)
+    # #     node_set.filter(smell__icontains=smell)
+    # #     node_set.filter(price__gte=lprice)
+    # #     node_set.filter(rating__gte=lrating)
+    # #     node_set.filter(price__lte=hprice)
+    # #     node_set.filter(rating__lte=lrating)
+
+    # # # print(node_set[0])
+    # # print(node_set[1])
+
+    # return node_set
 
 def filter_ssnodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, hprice = 10000000000, hrating = 5):
     '''
@@ -237,6 +251,42 @@ fetch_info:
     'page': 1
 }
 '''
+def assign_platform(node_id):
+    platform = db.cypher_query(
+        "MATCH (:Perfume {node_id: $node_id})\
+        -[:listedOn]->(n:SellingPlatform) RETURN n.name ", {'node_id': node_id} )[0]
+
+    # print('platform:',platform)
+    if len(platform) != 0 :
+        return platform[0][0]
+    else:
+        return '-'
+
+def assign_brand(node_id):
+    brand = db.cypher_query(
+        "MATCH (:Perfume {node_id: $node_id})\
+        -[:productOf]->(n:Brand) RETURN n.name ", {'node_id': node_id} )[0]
+
+    # print('brand:',brand)
+    if len(brand) != 0 and brand[0][0] != 'Na':
+        return brand[0][0]
+    else:
+        return '-'
+
+def beautify_frontend_display(serialized_nodes):
+    for i, node in enumerate(serialized_nodes):
+        nid = node['node_properties']['node_id']
+        serialized_nodes[i]['node_properties']['platform'] = assign_platform(nid)
+        serialized_nodes[i]['node_properties']['brand'] = assign_brand(nid)
+        if serialized_nodes[i]['node_properties']['smell'] == 'NULL'\
+                or serialized_nodes[i]['node_properties']['smell'] == 'None':
+            serialized_nodes[i]['node_properties']['smell'] = '-'
+        if serialized_nodes[i]['node_properties']['rating'] == 0:
+            serialized_nodes[i]['node_properties']['rating'] = '-'
+        if serialized_nodes[i]['node_properties']['price'] == ~(-1 ^ (1<<31)):
+            serialized_nodes[i]['node_properties']['rating'] = '-'
+
+
 def fetch_nodes(fetch_info):
     node_type       = fetch_info['node_type']
     search_word     = fetch_info['name']
@@ -252,10 +302,17 @@ def fetch_nodes(fetch_info):
     node_set           = filter_nodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
     fetched_nodes   = node_set
     serialized_nodes = [node.serialize for node in fetched_nodes]
+    # print('in fetch_nodes:', type(serialized_nodes[0]), serialized_nodes[0])
 
+
+    print('in fetch_nodes:', type(serialized_nodes[0]), serialized_nodes[0])
     def myFunc_rating(e):
         return e['node_properties']['rating']
     serialized_nodes.sort(key=myFunc_rating, reverse=True)
+ 
+    #add platform and brand here, alter the output of some missing data
+    beautify_frontend_display(serialized_nodes)
+
 
     return serialized_nodes
     # return fetched_nodes
@@ -282,7 +339,10 @@ def fetch_lpnodes(fetch_info):
     serialized_nodes.sort(key=myFunc_price, reverse=False)
 
     print(len(serialized_nodes))
-    # print(serialized_nodes)
+
+    #add platform and brand here, alter the output of some missing data
+    beautify_frontend_display(serialized_nodes)
+
     return serialized_nodes
 
 def fetch_ssnodes(fetch_info):
@@ -300,7 +360,8 @@ def fetch_ssnodes(fetch_info):
     node_set           = filter_ssnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
     fetched_nodes   = node_set
     serialized_nodes = [node.serialize for node in fetched_nodes]
-    
+
+
     seed_node = serialized_nodes[0]
     serialized_nodes = serialized_nodes[1:]
 
@@ -309,6 +370,9 @@ def fetch_ssnodes(fetch_info):
     serialized_nodes.sort(key=myFunc_rating, reverse=True)
 
     serialized_nodes.insert(0, seed_node)
+ 
+    #add platform and brand here, alter the output of some missing data
+    beautify_frontend_display(serialized_nodes)
 
     return serialized_nodes
 
@@ -327,7 +391,6 @@ def fetch_sbnodes(fetch_info):
     end             = start + limit
     node_set           = filter_sbnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
     fetched_nodes   = node_set
-
     serialized_nodes = [node.serialize for node in fetched_nodes]
 
     seed_node = serialized_nodes[0]
@@ -339,6 +402,9 @@ def fetch_sbnodes(fetch_info):
 
     
     serialized_nodes.insert(0, seed_node)
+
+    #add platform and brand here, alter the output of some missing data
+    beautify_frontend_display(serialized_nodes)
 
     return serialized_nodes
 
@@ -356,8 +422,8 @@ def fetch_spnodes(fetch_info):
     end             = start + limit
     node_set           = filter_spnodes(MODEL_ENTITIES[node_type], search_word, size, smell, lprice, lrating, hprice, hrating)
     fetched_nodes   = node_set
-
     serialized_nodes = [node.serialize for node in fetched_nodes]
+
 
     seed_node = serialized_nodes[0]
     serialized_nodes = serialized_nodes[1:]
@@ -367,6 +433,9 @@ def fetch_spnodes(fetch_info):
     serialized_nodes.sort(key=myFunc_rating, reverse=True)
     
     serialized_nodes.insert(0, seed_node)
+
+    #add platform and brand here, alter the output of some missing data
+    beautify_frontend_display(serialized_nodes)
 
     return serialized_nodes
 

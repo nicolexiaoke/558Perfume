@@ -29,12 +29,15 @@
 
   const nodes_settings = {
     'Perfume': {
+      'node_id': ['nodeID', true],
       'name': ['name', true],
       'size': ['size', true],
       'price': ['price', true],
       'rating': ['rating', true],
       'smell': ['scent', true],
-      'url': ['url', false]
+      'url': ['url', false],
+      'platform': ['platform', true],
+      'brand': ['brand', true]
     }
   };
 
