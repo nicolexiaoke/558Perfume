@@ -122,19 +122,19 @@ class GetNodesData(APIView):
             'page': int(request.GET.get('p', 1)),
         }
         nodes = fetch_nodes(fetch_info)
-        
+
         def myFunc_rating(e):
             return e['node_properties']['rating']
         def myFunc_price(e):
             return e['node_properties']['price']
-        
+
         # if fetch_info['size'] == '':
         #     print('size is null')
         #     nodes.sort(key=myFunc_rating, reverse=True)
         # else:
         #     nodes.sort(key=myFunc_price, reverse=False)
         nodes.sort(key=myFunc_rating, reverse=True)
-        
+
         # print(nodes)
         data = {
             'response': {
@@ -161,7 +161,7 @@ class GetLPNodesData(APIView):
             'page': int(request.GET.get('p', 1)),
         }
         nodes = fetch_lpnodes(fetch_info)
-    
+
         # print(nodes)
         data = {
             'response': {
@@ -253,7 +253,7 @@ class GetSBNodesData(APIView):
             },
         }
         return Response(data)
-    
+
 
 '''buggy! ID of nodes not solved'''
 class GetNodeData(APIView):
@@ -318,6 +318,12 @@ class SimilarRecommendation(View):
 
 class PriceRecommendation(View):
     template = 'price_recommendation.html'
+
+    def get(self, request):
+        return render(request, self.template)
+
+class Analytics(View):
+    template = 'analytics.html'
 
     def get(self, request):
         return render(request, self.template)

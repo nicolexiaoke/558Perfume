@@ -193,14 +193,7 @@ def commit_ent_rel(tx, data: List[Dict[str, Any]], plt_info:dict) ->List[str]:
             brand_id += 1
 
 
-        # Add relation
-        add_relation += f"CREATE (n{perfume_id})-[:listedOn]->(t{plt_id}) "
-        add_relation += "CREATE (n{0})-[:productOf]->({1}) ".format(
-            perfume_id, all_brands[record["brand"]]
-        )
-        # print(add_relation)
-
-        lines.append(f"n{perfume_id},{record['brand']},{all_brands[record['brand']]},{plt_name},t{plt_id},"+
+        lines.append(f"n{perfume_id},{all_brands[record['brand']]},\"{record['brand']}\",{plt_name},t{plt_id},"+
                      ",".join(map(lambda x: f'"{record[x]}"', string)) + "," +
                      ",".join(map(lambda x: f'{record[x]}' , nonstr)))
         perfume_id += 1

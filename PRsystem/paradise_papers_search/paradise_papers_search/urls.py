@@ -26,6 +26,7 @@ urlpatterns = [
     path('random_recommendation/', views.RandomRecommendation.as_view(), name='random_recommendation'),
     path('similar_recommendation/', views.SimilarRecommendation.as_view(), name='similar_recommendation'),
     path('price_recommendation/', views.PriceRecommendation.as_view(), name='price_recommendation'),
+    path('analytics/', views.Analytics.as_view(), name='analytics'),
     url(r'^random_recommendation/fetch/', include('fetch_api.urls')),
     url(r'^similar_recommendation/fetch/', include('fetch_api.urls')),
     url(r'^price_recommendation/fetch/', include('fetch_api.urls')),

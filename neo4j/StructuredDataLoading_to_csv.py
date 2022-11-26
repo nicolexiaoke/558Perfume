@@ -68,11 +68,10 @@ def commit_ent_rel(tx, data: List[List[Union[str, float]]]):
         flag, brand = find_brand(record["name"], record["brand"])
         record["brand"] = brand if brand else "Unknown"
 
-        lines.append(f"s{structured_id}, {brand},{all_brands[brand]},,,"+
+        lines.append(f's{structured_id}, {all_brands[brand]},"{brand}",,,'+
                      ",".join(map(lambda x: f'"{record[x]}"', string)) + "," +
                      ",".join(map(lambda x: f'{record[x]}' , nonstr)))
         structured_id += 1
-
     return lines
 
 if __name__ == "__main__":
@@ -99,7 +98,6 @@ if __name__ == "__main__":
                 jsonl.load_to_list(info["data"]),
                 info
             )
-
         lines = session.execute_write(
             commit_ent_rel,
             data,

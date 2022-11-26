@@ -6,7 +6,7 @@
     <div id="search-home" class="container-fluid search-home bg-white">
       <div class="row h-100 justify-content-center align-items-center">
         <div class="col-10 text-center">
-          <h1 class="display-3 mb-5">Lowest Price Recommendation </h1>
+          <h1 class="display-3 mb-5">Best Product Recommendation </h1>
           <form class="search-form" data-bind="submit: () => $('#init-search').click()">
             <div class="form-group row">
               <div class="input-group mb-3 col-md-12">
@@ -23,7 +23,7 @@
                                                         value: _filters.perfume_names" >click to filter sizes</a>
                 </div> -->
               </div>
-              
+
               <!-- <div class="input-group mb-3 col-md-6">
                 <div class="input-group-prepend">
                   <span class="input-group-text">By Country:</span>
@@ -42,7 +42,7 @@
                   data-bind="options: _perfumeSizeList,
                              optionsCaption: 'All...',
                              value: _filters.perfume_sizes">
-                </select>             
+                </select>
                  <a id="init-search" href="#search-results" class="btn btn-link col-md-1" data-bind="click: function() { setLowestPriceState(); initNodeSeach() }  ">
                 <i class="fa fa-search fa-x "></i>
                 </a>
@@ -169,7 +169,7 @@
                                    click: (node)=>{$root.displayNode(node)}">
                         <td data-bind="text: $parent._node_properties[$data.property_name],
                                      visible: $data.property_display_table">
-                                     
+
                         </td>
                     </tr>
                   </tbody>
