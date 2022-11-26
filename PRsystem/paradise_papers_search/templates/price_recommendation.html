@@ -3,7 +3,16 @@
 {% block content %}
 
     <!-- Search home -->
-    <div id="search-home" class="container-fluid search-home bg-white">
+
+    <style>
+      #search-home {
+        background-image: url("/static/image/bg_lp1.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+    </style>
+
+    <div id="search-home" class="container-fluid search-home" >
       <div class="row h-100 justify-content-center align-items-center">
         <div class="col-10 text-center">
           <h1 class="display-3 mb-5">Best Product Recommendation </h1>
@@ -13,7 +22,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text">Perfume names</span>
                 </div>
-                <select class="form-control"
+                <select class="form-control "
                   data-bind="options: _perfumeNameList,
                              optionsCaption: 'All...',
                              value: _filters.perfume_names">  <!-- the value of the list comes from the filter of jurisdiction -->
@@ -49,7 +58,7 @@
 
               </div> -->
               <div class="col">
-                <label for="search-input" class="search-label form-text text-muted text-left">select a perfume to see how its ratings and prices differ from different vendors:</label>
+                <label for="search-input" class="search-label form-text text-left">select a perfume to see how its ratings and prices differ from different vendors:</label>
               </div>
             </div> <!-- End Filters -->
 
@@ -68,10 +77,10 @@
 
             <div class="form-row">
               <div class="col-md-6 mt-auto">
-                <a class="btn btn-primary text-white"  id="init-search" href="#search-results" data-bind="click: initNodeSeach">highest rating products</a>
+                <a class="btn btn-dark text-white"  id="init-search" href="#search-results" data-bind="click: initNodeSeach">highest rating products</a>
               </div>
               <div class="col-md-6 mt-auto">
-                <a class="btn btn-primary text-white"  id="init-search" href="#search-results" data-bind="click: function() { setLowestPriceState(); initNodeSeach() }" >lowest price vendors</a>
+                <a class="btn btn-dark text-white"  id="init-search" href="#search-results" data-bind="click: function() { setLowestPriceState(); initNodeSeach() }" >lowest price vendors</a>
               </div>
               <!-- <div class="form-group col-12">
                 <div class="row">

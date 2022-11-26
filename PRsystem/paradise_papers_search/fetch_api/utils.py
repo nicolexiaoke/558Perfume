@@ -29,27 +29,28 @@ def filter_nodes(node_type, search_text, size, smell, lprice = 0, lrating = 0, h
     print('node_type:', node_type)
     print('search_text:', search_text)
     pre_node_set = node_type.nodes
+    
+
 
     # On DeliveryOption nodes we want to check the search_text against the description property
     # For any other we check against the name property
     
-    pre_node_set.filter(name__iexact=search_text)
+    if search_text != '':
+        pre_node_set.filter(name__iexact=search_text)
+        seednode = pre_node_set[0]
+        seedid = seednode.node_id
+        node_set =  db.cypher_query("MATCH (:Perfume {node_id: $seedid})\
+            -[:sameAs]-> (n)\
+            RETURN DISTINCT n",\
+                {'seedid': seedid}
+            )[0]
+        SANODE = [node_type.inflate(n[0]) for n in node_set]
+        SANODE.insert(0, seednode)
+        # print('\n\n in filter_ssnodes, noe_set:', SSNODE)
+        return SANODE
+    else:
+        return  pre_node_set
 
-    seednode = pre_node_set[0]
-
-    seedid = seednode.node_id
-    node_set =  db.cypher_query("MATCH (:Perfume {node_id: $seedid})\
-         -[:sameAs]-> (n)\
-        RETURN DISTINCT n",\
-            {'seedid': seedid}
-        )[0]
-    
-    SANODE = [node_type.inflate(n[0]) for n in node_set]
-    SANODE.insert(0, seednode)
-    
-    # print('\n\n in filter_ssnodes, noe_set:', SSNODE)
-
-    return SANODE
 
     # # Only Perfume store size, smell, price, rating info
     # # if node_type.__name__ == 'Perfume':
